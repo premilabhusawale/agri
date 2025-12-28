@@ -1,11 +1,12 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Header from "./componants/Header";
-import Market_prices from "./Pages/Market_prices";
+import LivePrices from "./Pages/LivePrices";
 import Footer from "./componants/Footer";
 import Home from "./Pages/Home";
 import MarketPlace from "./Pages/MarketPlace";
-import How_itworks from "./Pages/How_itworks";
+import ForFarmers from "./Pages/ForFarmers";
+import About from "./Pages/About";
 
 
 const App = () => {
@@ -16,9 +17,10 @@ const App = () => {
       <Routes>
         <Route path="/" element={<Home />} />
 
-        <Route path="/Markrt_prices" element={<Market_prices />} />
+        <Route path="/LivePrices" element={<LivePrices />} />
         <Route path="/MarketPlace" element={<MarketPlace />} />
-        <Route path="/How_itworks"element={<How_itworks/>}/>
+        <Route path="/ForFarmers"element={<ForFarmers/>}/>
+        <Route path="/About"element={<About/>}/>
       </Routes>
 
       <Footer />
