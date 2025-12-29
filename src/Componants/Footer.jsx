@@ -37,7 +37,9 @@ const Footer = () => {
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
               <div className="w-10 h-10 rounded-xl bg-gradient-harvest flex items-center justify-center">
-                <Leaf className="w-6 h-6 text-forest-dark" />
+                <span className="bg-amber-400 p-2 rounded-lg">
+                           <Leaf className="text-black" size={24} />
+                         </span>
               </div>
               <span className="text-xl font-bold">AgriConnect</span>
             </div>

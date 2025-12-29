@@ -13,8 +13,8 @@ const Header = () => {
 
         {/* LEFT: Logo */}
         <div className="text-2xl flex items-center gap-2">
-          <span className="bg-green-800 p-2 rounded-lg">
-            <Leaf className="text-white" size={24} />
+          <span className="bg-amber-400 p-2 rounded-lg">
+            <Leaf className="text-black" size={24} />
           </span>
           <span>
             <span className="text-black font-bold">Agri</span>
@@ -24,11 +24,11 @@ const Header = () => {
 
         {/* CENTER: Links */}
         <nav className="flex gap-6 text-gray-600 font-medium">
-          <Link to="/" className="hover:text-green-800">Home</Link>
-          <Link to="/MarketPlace" className="hover:text-green-800 ">Marketplace</Link>
-          <Link to="/LivePrices" className="hover:text-green-800">Live prices</Link>
-          <Link to="/ForFarmers" className="hover:text-green-800">For Farmers</Link>
-          <Link to="/About" className="hover:text-green-800">About</Link>
+          <Link to="/" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">Home</Link>
+          <Link to="/MarketPlace" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl ">Marketplace</Link>
+          <Link to="/LivePrices" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">Live prices</Link>
+          <Link to="/ForFarmers" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">For Farmers</Link>
+          <Link to="/About" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">About</Link>
 
         </nav>
 
@@ -36,7 +36,7 @@ const Header = () => {
         <div className="relative">
           <input
             type="text"
-            placeholder="Search products..."
+            placeholder="Search crops,farmers..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-700"
@@ -46,44 +46,29 @@ const Header = () => {
         {/* RIGHT BUTTONS */}
         <div className="flex gap-3">
           <button
-            onClick={() => setShowPopup(true)}
-            className="hover:bg-gray-200 px-4 py-2 rounded-md flex items-center gap-2 text-black font-medium"
-          >
-            <User size={18} />
-            Login
-          </button>
+  onClick={() => setShowPopup(true)}
+  className="
+    bg-amber-500 px-4 py-2 rounded-lg
+    flex items-center gap-2
+    text-black font-medium
 
-          <button className="bg-green-800 text-white px-3 py-2 font-semibold rounded-lg hover:-translate-y-0.5 transition">
-            Get started
-          </button>
+    transition-all duration-200 ease-out
+    shadow-md
+    hover:-translate-y-1
+    hover:shadow-xl
+    active:translate-y-0
+    active:shadow-md"  >
+  <User size={18} />
+  Login
+</button>
+
         </div>
       </header>
 
-      {/* POPUP */}
-      {showPopup && (
-        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-          <div className="bg-white p-6 rounded-xl w-80 text-center">
-            <h2 className="text-xl font-bold mb-4">Who are you?</h2>
+     
 
-            <div className="flex flex-col gap-3">
-              <button className="bg-green-800 text-white py-2 rounded-lg hover:bg-green-700">
-                Farmer
-              </button>
-
-              <button className="bg-gray-800 text-white py-2 rounded-lg hover:bg-gray-700">
-                Buyer
-              </button>
-            </div>
-
-            <button
-              onClick={() => setShowPopup(false)}
-              className="mt-4 text-sm text-gray-500 hover:underline"
-            >
-              Close
-            </button>
-          </div>
-        </div>
-      )}
+              
+      
     </>
   )
 }
