@@ -8,7 +8,6 @@ import MarketPlace from "./Pages/MarketPlace";
 import ForFarmers from "./Pages/ForFarmers";
 import About from "./Pages/About";
 
-
 const App = () => {
   return (
     <BrowserRouter>
@@ -16,13 +15,12 @@ const App = () => {
 
       <Routes>
         <Route path="/" element={<Home />} />
-
         <Route path="/LivePrices" element={<LivePrices />} />
         <Route path="/MarketPlace" element={<MarketPlace />} />
-        <Route path="/ForFarmers"element={<ForFarmers/>}/>
-        <Route path="/About"element={<About/>}/>
+        <Route path="/ForFarmers" element={<ForFarmers/>} />
+        <Route path="/About" element={<About/>} />
       </Routes>
-
+      
       <Footer />
     </BrowserRouter>
   )
