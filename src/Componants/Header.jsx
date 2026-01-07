@@ -7,7 +7,7 @@ const Header = () => {
   const [search, setSearch] = useState('')
   const navigate = useNavigate()
 
-  const [isLaggedIn, setIsLaggedIn] = useState(true);
+  const [isLaggedIn, setIsLaggedIn] = useState(true); // Replace with actual authentication logic);
 
   return (
     <>

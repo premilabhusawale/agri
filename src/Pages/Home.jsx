@@ -1,7 +1,7 @@
 import React from 'react'
 import Hero from '../HeroSction/Hero'
 import PriceTicker from '../HeroSction/PriceTicker'
-import Products from '../Products/Products'
+import Products from './Products'
 import products from '../Data/Products'
 
 

@@ -1,7 +1,9 @@
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const Card = ({ product }) => {
   return (
+    <Link to={`/product/${product.id}`} className="no-underline">
     <div className="bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-300 hover:-translate-y-2 flex flex-col h-full">
       {/* Image Container */}
       <div className="relative w-full h-48 bg-gray-100 overflow-hidden group">
@@ -22,7 +24,7 @@ const Card = ({ product }) => {
       </div>
       
       {/* Content Container */}
-      <div className="p-4 flex flex-col flex-grow">
+      <div className="p-4 flex flex-col grow">
         {/* Category Tag */}
         <div className="inline-block bg-sky-100 text-sky-700 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider mb-2 w-fit">
           {product.category}
@@ -34,7 +36,7 @@ const Card = ({ product }) => {
         </h3>
         
         {/* Description */}
-        <p className="text-sm text-gray-600 mb-4 flex-grow leading-relaxed">
+        <p className="text-sm text-gray-600 mb-4 grow leading-relaxed">
           {product.description}
         </p>
         
@@ -50,12 +52,13 @@ const Card = ({ product }) => {
           </div>
           
           {/* Add to Cart Button */}
-          <button className="bg-gradient-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform duration-200 shadow-md hover:shadow-lg">
+          <button className="bg-linear-to-r from-emerald-500 to-emerald-600 text-white px-4 py-2 rounded-lg font-bold text-xs uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform duration-200 shadow-md hover:shadow-lg">
             Add
           </button>
         </div>
       </div>
     </div>
+    </Link>
   )
 }
 

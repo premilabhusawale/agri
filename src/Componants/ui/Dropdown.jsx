@@ -27,9 +27,11 @@ const Dropdown = () => {
             : "opacity-0 -translate-y-2 pointer-events-none"}
         `}
       >
-        <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
+        
+    <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
           Account
         </button>
+    
         <button className="w-full px-4 py-2 text-left text-sm hover:bg-gray-100">
           Orders
         </button>

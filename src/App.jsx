@@ -8,6 +8,7 @@ import MarketPlace from "./Pages/MarketPlace";
 import ForFarmers from "./Pages/ForFarmers";
 import About from "./Pages/About";
 import Auth from "./Pages/Auth";
+import ProductDetails from "./Pages/ProductDetails";
 
 const App = () => {
   return (
@@ -18,6 +19,7 @@ const App = () => {
         <Route path="/" element={<Home />} />
         <Route path="/LivePrices" element={<LivePrices />} />
         <Route path="/MarketPlace" element={<MarketPlace />} />
+        <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/ForFarmers" element={<ForFarmers/>} />
         <Route path="/About" element={<About/>} />
         <Route path="/Auth" element={<Auth/>} />
