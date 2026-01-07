@@ -6,11 +6,11 @@ const Products = ({ products }) => {
     <section className="py-16 px-4 sm:px-6 lg:px-8 bg-gradient-to-b from-slate-50 to-gray-100 max-w-7xl mx-auto">
       {/* Section Header */}
       <div className="text-center mb-16">
-        <h2 className="text-4xl sm:text-5xl font-black mb-3 bg-gradient-to-r from-emerald-500 to-emerald-700 bg-clip-text text-transparent">
-          Featured Products
+        <h2 className="text-4xl text-black font-bold mb-4">
+          Marketplace
         </h2>
         <p className="text-lg text-gray-600 font-medium">
-          Fresh from our farmers to your table
+          Browse fresh produce directly from verified farmers. Quality guaranteed, fair prices always.
         </p>
       </div>
       

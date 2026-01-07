@@ -1,11 +1,11 @@
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import { Leaf, User } from 'lucide-react'
 
 const Header = () => {
   // 🔹 STATE (ALWAYS HERE)
   const [search, setSearch] = useState('')
-  const [showPopup, setShowPopup] = useState(false)
+  const navigate = useNavigate()
 
   return (
     <>
@@ -46,29 +46,23 @@ const Header = () => {
         {/* RIGHT BUTTONS */}
         <div className="flex gap-3">
           <button
-  onClick={() => setShowPopup(true)}
-  className="
-    bg-amber-500 px-4 py-2 rounded-lg
-    flex items-center gap-2
-    text-black font-medium
-
-    transition-all duration-200 ease-out
-    shadow-md
-    hover:-translate-y-1
-    hover:shadow-xl
-    active:translate-y-0
-    active:shadow-md"  >
-  <User size={18} />
-  Login
-</button>
-
+            onClick={() => navigate('/Auth')}
+            className="
+              bg-amber-500 px-4 py-2 rounded-lg
+              flex items-center gap-2
+              text-black font-medium
+              transition-all duration-200 ease-out
+              shadow-md
+              hover:-translate-y-1
+              hover:shadow-xl
+              active:translate-y-0
+              active:shadow-md"
+          >
+            <User size={18} />
+            Login
+          </button>
         </div>
       </header>
-
-     
-
-              
-      
     </>
   )
 }
