@@ -1,11 +1,13 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { Leaf, User } from 'lucide-react'
+import Dropdown from './ui/Dropdown'
 
 const Header = () => {
-  // 🔹 STATE (ALWAYS HERE)
   const [search, setSearch] = useState('')
   const navigate = useNavigate()
+
+  const [isLaggedIn, setIsLaggedIn] = useState(true);
 
   return (
     <>
@@ -45,7 +47,11 @@ const Header = () => {
 
         {/* RIGHT BUTTONS */}
         <div className="flex gap-3">
-          <button
+           {
+            isLaggedIn ? (
+                <Dropdown/>
+            ):(
+              <button
             onClick={() => navigate('/Auth')}
             className="
               bg-amber-500 px-4 py-2 rounded-lg
@@ -61,6 +67,8 @@ const Header = () => {
             <User size={18} />
             Login
           </button>
+            )
+           }
         </div>
       </header>
     </>
