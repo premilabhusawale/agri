@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Header from "./componants/Header";
 import LivePrices from "./Pages/LivePrices";
 import Footer from "./componants/Footer";
@@ -9,10 +9,14 @@ import ForFarmers from "./Pages/ForFarmers";
 import About from "./Pages/About";
 import Auth from "./Pages/Auth";
 import ProductDetails from "./Pages/ProductDetails";
+import Cart from "./Pages/Cart";
+import Wishlist from "./Pages/Wishlist";
+import Orders from "./Pages/Orders";
+import Accounts from "./Pages/Accounts";
 
 const App = () => {
   return (
-    <BrowserRouter>
+    <Router>
       <Header />
 
       <Routes>
@@ -20,14 +24,18 @@ const App = () => {
         <Route path="/LivePrices" element={<LivePrices />} />
         <Route path="/MarketPlace" element={<MarketPlace />} />
         <Route path="/product/:id" element={<ProductDetails />} />
-        <Route path="/ForFarmers" element={<ForFarmers/>} />
-        <Route path="/About" element={<About/>} />
-        <Route path="/Auth" element={<Auth/>} />
+        <Route path="/ForFarmers" element={<ForFarmers />} />
+        <Route path="/About" element={<About />} />
+        <Route path="/Auth" element={<Auth />} />
+        <Route path="/Accounts" element={<Accounts />} />
+        <Route path="/Cart" element={<Cart />} />
+        <Route path="/Wishlist" element={<Wishlist />} />
+        <Route path="/Orders" element={<Orders />} />
       </Routes>
-      
+
       <Footer />
-    </BrowserRouter>
-  )
-}
+    </Router>
+  );
+};
 
 export default App;

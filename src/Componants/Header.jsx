@@ -31,6 +31,7 @@ const Header = () => {
           <Link to="/LivePrices" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">Live prices</Link>
           <Link to="/ForFarmers" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">For Farmers</Link>
           <Link to="/About" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">About</Link>
+          
 
         </nav>
 
