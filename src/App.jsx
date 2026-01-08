@@ -1,8 +1,8 @@
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Header from "./componants/Header";
+import Header from "./Components/Header";
 import LivePrices from "./Pages/LivePrices";
-import Footer from "./componants/Footer";
+import Footer from "./Components/Footer";
 import Home from "./Pages/Home";
 import MarketPlace from "./Pages/MarketPlace";
 import ForFarmers from "./Pages/ForFarmers";
