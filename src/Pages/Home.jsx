@@ -3,6 +3,7 @@ import Hero from '../HeroSction/Hero'
 import PriceTicker from '../HeroSction/PriceTicker'
 import Products from './Products'
 import products from '../Data/Products'
+import LivePricesSection from '../HeroSction/LivePriceSection'
 
 
 const Home = () => {
@@ -10,6 +11,7 @@ const Home = () => {
     <div>
       <Hero />
       <PriceTicker />
+      <LivePricesSection />
       <Products products={products} />
     </div>
   )
