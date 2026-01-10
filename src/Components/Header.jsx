@@ -1,77 +1,109 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Leaf, User } from 'lucide-react'
+import { Leaf, User, Search } from 'lucide-react'
+
+// Import your existing Dropdown component
 import Dropdown from './ui/Dropdown'
 
+// TopBar Component
+const TopBar = ({ search, setSearch, isLoggedIn }) => {
+  const navigate = useNavigate()
+  
+  return (
+    <div className="bg-[#D9D5CD]/95 backdrop-blur-md py-5 px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+      {/* Logo - Positioned with margin-right */}
+      <Link to="/" className="text-2xl flex items-center gap-2.5 hover:opacity-90 transition-opacity mr-12">
+        <span className="bg-amber-400 p-2.5 rounded-xl shadow-md">
+          <Leaf className="text-black" size={28} />
+        </span>
+        <span className="text-3xl">
+          <span className="text-black font-bold">Agri</span>
+          <span className="text-green-800 font-bold">Connect</span>
+        </span>
+      </Link>
+
+      {/* SEARCH - Centered with proper width */}
+      <div className="flex-1 max-w-xl mx-auto relative">
+        <input
+          type="text"
+          placeholder="Search crops, farmers..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 rounded-lg border-2 border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700"
+        />
+        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
+      </div>
+
+      {/* Authentication Section on Right */}
+      <div className="flex gap-3 ml-8">
+        {isLoggedIn ? (
+          <Dropdown />
+        ) : (
+          <button
+            onClick={() => navigate('/Auth')}
+            className="bg-amber-500 px-6 py-2 rounded-lg flex items-center gap-2.5 text-black font-bold text-base transition-all duration-200 ease-out shadow-md hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-md"
+          >
+            <User size={20} strokeWidth={2.5} />
+            <span className="text-black">Login</span>
+          </button>
+        )}
+      </div>
+    </div>
+  )
+}
+
+// NavBar Component
+const NavBar = () => {
+  return (
+    <nav className="bg-white border-b border-gray-200 py-3.5 px-8 sticky top-[88px] z-40 shadow-sm">
+      <div className="flex items-center justify-center max-w-7xl mx-auto">
+        {/* Navigation Links - Centered */}
+        <div className="flex gap-2 text-gray-600 font-medium">
+          <Link
+            to="/"
+            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
+          >
+            Home
+          </Link>
+          <Link
+            to="/MarketPlace"
+            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
+          >
+            Marketplace
+          </Link>
+          <Link
+            to="/LivePrices"
+            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
+          >
+            Live Prices
+          </Link>
+          <Link
+            to="/ForFarmers"
+            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
+          >
+            For Farmers
+          </Link>
+          <Link
+            to="/About"
+            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
+          >
+            About
+          </Link>
+        </div>
+      </div>
+    </nav>
+  )
+}
+
+// Main Header Component
 const Header = () => {
   const [search, setSearch] = useState('')
-  const navigate = useNavigate()
-
-  const [isLaggedIn, setIsLaggedIn] = useState(true); // Replace with actual authentication logic);
+  const [isLoggedIn, setIsLoggedIn] = useState(true) // Replace with actual authentication logic
 
   return (
     <>
-      <header className="bg-[#D9D5CD]/80 backdrop-blur-md py-5 px-5 flex items-center justify-between sticky top-0 z-50">
-
-        {/* LEFT: Logo */}
-        <div className="text-2xl flex items-center gap-2">
-          <span className="bg-amber-400 p-2 rounded-lg">
-            <Leaf className="text-black" size={24} />
-          </span>
-          <span>
-            <span className="text-black font-bold">Agri</span>
-            <span className="text-green-800 font-bold">Connect</span>
-          </span>
-        </div>
-
-        {/* CENTER: Links */}
-        <nav className="flex gap-6 text-gray-600 font-medium">
-          <Link to="/" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">Home</Link>
-          <Link to="/MarketPlace" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl ">Marketplace</Link>
-          <Link to="/LivePrices" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">Live prices</Link>
-          <Link to="/ForFarmers" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">For Farmers</Link>
-          <Link to="/About" className="hover:text-green-800 hover:bg-gray-200 px-4 py-2 rounded-3xl">About</Link>
-          
-
-        </nav>
-
-        {/* SEARCH */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="Search crops,farmers..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-4 pr-4 py-2 rounded-lg border border-gray-300 focus:outline-none focus:ring-2 focus:ring-green-700"
-          />
-        </div>
-
-        {/* RIGHT BUTTONS */}
-        <div className="flex gap-3">
-           {
-            isLaggedIn ? (
-                <Dropdown/>
-            ):(
-              <button
-            onClick={() => navigate('/Auth')}
-            className="
-              bg-amber-500 px-4 py-2 rounded-lg
-              flex items-center gap-2
-              text-black font-medium
-              transition-all duration-200 ease-out
-              shadow-md
-              hover:-translate-y-1
-              hover:shadow-xl
-              active:translate-y-0
-              active:shadow-md"
-          >
-            <User size={18} />
-            Login
-          </button>
-            )
-           }
-        </div>
-      </header>
+      <TopBar search={search} setSearch={setSearch} isLoggedIn={isLoggedIn} />
+      <NavBar />
     </>
   )
 }
