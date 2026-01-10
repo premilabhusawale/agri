@@ -1,7 +1,6 @@
 import { motion } from "framer-motion";
 import { Search, TrendingUp, Users, Leaf, ArrowRight } from "lucide-react";
-
-const heroImage = "https://i.postimg.cc/0N4HTq84/hero-farm.jpg";
+import HeroCarousel from "./HeroCarousel";
 
 const Hero = () => {
   const stats = [
@@ -11,27 +10,23 @@ const Hero = () => {
   ];
 
   return (
-    <section className="relative min-h-screen flex items-center pt-20 overflow-hidden">
-      {/* Background Image */}
+    <section className="relative min-h-screen flex   overflow-hidden">
+      {/* Background Carousel */}
       <div className="absolute inset-0">
-        <img
-          src={heroImage}
-          alt="Agricultural farm at sunrise"
-          className="w-full h-full object-cover brightness-75"
-        />
-        <div className="absolute inset-0 bg-gradient-to-r from-green-900/50 via-green-800/40 to-green-900/30" />
+        <HeroCarousel />
+
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10">
+      <div className="container mx-auto px-4 relative z-10 py-15 bg-linear-to-tr from-slate-900/90 via-slate-900/70 to-transparent  p-8 lg:p-16">
         <div className="max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <span className=" text-white inline-flex items-center gap-2 px-4 py-2 rounded-full bg-card/10 backdrop-blur-sm border border-card/20 text-card text-sm font-medium mb-6">
-              <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+            <span className="text-white inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium mb-6">
+              <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               Live Market Prices Updated Every Hour
             </span>
           </motion.div>
@@ -43,8 +38,8 @@ const Hero = () => {
             className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
           >
             Empowering Farmers with{" "}
-            <span className="text-gradient-harvest">Real-Time Prices</span> &{" "}
-            <span className="text-gradient-harvest">Direct Market Access</span>
+            <span className="text-orange-400">Real-Time Prices</span> &{" "}
+            <span className="text-orange-400">Direct Market Access</span>
           </motion.h1>
 
           <motion.p
@@ -65,7 +60,7 @@ const Hero = () => {
             className="flex flex-col sm:flex-row gap-3 mb-10"
           >
             <div className="relative flex-1 max-w-lg">
-              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500" />
               <input
                 type="text"
                 placeholder="Search for tomatoes, wheat, rice..."
@@ -87,10 +82,9 @@ const Hero = () => {
           >
             {stats.map((stat, index) => (
               <div key={index} className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-xl bg-card/10 backdrop-blur-sm flex items-center justify-center">
-                  <stat.icon className="w-6 h-6 text-orange-500" /> {/* ✅ Orange Icon */}
+                <div className="w-12 h-12 rounded-xl bg-white/10 backdrop-blur-sm flex items-center justify-center">
+                  <stat.icon className="w-6 h-6 text-orange-500" />
                 </div>
-
                 <div>
                   <div className="text-2xl font-bold text-white">
                     {stat.value}
@@ -102,7 +96,6 @@ const Hero = () => {
               </div>
             ))}
           </motion.div>
-
         </div>
       </div>
 
@@ -113,7 +106,7 @@ const Hero = () => {
         transition={{ duration: 1, delay: 0.5 }}
         className="absolute bottom-10 right-10 hidden lg:block"
       >
-        <div className="w-32 h-32 rounded-full bg-harvest/20 blur-3xl" />
+        <div className="w-32 h-32 rounded-full bg-orange-500/20 blur-3xl" />
       </motion.div>
     </section>
   );

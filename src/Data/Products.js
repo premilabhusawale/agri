@@ -1,4 +1,4 @@
-const products = [
+ export const products = [
   // 🌽 CEREALS & GRAINS
   {
     id: 1,
