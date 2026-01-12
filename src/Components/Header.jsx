@@ -8,31 +8,38 @@ import Dropdown from './ui/Dropdown'
 // TopBar Component
 const TopBar = ({ search, setSearch, isLoggedIn }) => {
   const navigate = useNavigate()
-  
+
   return (
-    <div className="bg-[#D9D5CD]/95 backdrop-blur-md py-5 px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm">
+    <div className="bg-[#235C42]/95 backdrop-blur-md py-5 px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm">
       {/* Logo - Positioned with margin-right */}
       <Link to="/" className="text-2xl flex items-center gap-2.5 hover:opacity-90 transition-opacity mr-12">
         <span className="bg-amber-400 p-2.5 rounded-xl shadow-md">
           <Leaf className="text-black" size={28} />
         </span>
         <span className="text-3xl">
-          <span className="text-black font-bold">Agri</span>
-          <span className="text-green-800 font-bold">Connect</span>
+          <span className="text-white font-bold">Agri</span>
+          <span className="text-amber-400 font-bold">Connect</span>
         </span>
       </Link>
 
-      {/* SEARCH - Centered with proper width */}
-      <div className="flex-1 max-w-xl mx-auto relative">
-        <input
-          type="text"
-          placeholder="Search crops, farmers..."
-          value={search}
-          onChange={(e) => setSearch(e.target.value)}
-          className="w-full pl-10 pr-4 py-2 rounded-lg border-2 border-green-700 focus:outline-none focus:ring-2 focus:ring-green-700"
-        />
-        <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
-      </div>
+    <div className="relative w-full max-w-xl mx-auto">
+  <input
+    type="text"
+    placeholder="Search crops, farmers..."
+    value={search}
+    onChange={(e) => setSearch(e.target.value)}
+    className="w-full pl-10 pr-4 py-2 rounded-lg
+               bg-transparent
+               border border-white
+               text-white placeholder-gray-300
+               focus:outline-none focus:ring-2 focus:ring-white"
+  />
+  <Search
+    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-300"
+    size={20}
+  />
+</div>
+
 
       {/* Authentication Section on Right */}
       <div className="flex gap-3 ml-8">
