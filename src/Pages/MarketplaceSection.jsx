@@ -1,14 +1,13 @@
-
 import ProductsGrid from './ProductsGrid';
 
-const MarketPlace = () => {
+const MarketplaceSection = () => {
   return (
-    <div className="min-h-screen bg-gray-50 py-20">
+    <section id="marketplace" className="py-20 bg-gray-50">
       <div className="container mx-auto px-4">
         <ProductsGrid />
       </div>
-    </div>
+    </section>
   );
 };
 
-export default MarketPlace;
+export default MarketplaceSection;

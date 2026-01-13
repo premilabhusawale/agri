@@ -8,16 +8,34 @@ const ProductDetails = () => {
     const [isLoaded, setIsLoaded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
 
-    const product = products.find((item) => item.id === Number(id));
+    // Match product by string ID (your IDs are strings like "1", "2", etc.)
+    const product = products.find((item) => item.id === id);
 
     useEffect(() => {
-        setIsLoaded(true);
-    }, []);
+        // Reset states when product ID changes
+        setIsLoaded(false);
+        setSelectedImage(0);
+        
+        // Scroll to top when product changes
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+        
+        // Small delay for smooth transition
+        const timer = setTimeout(() => {
+            setIsLoaded(true);
+        }, 100);
+
+        return () => clearTimeout(timer);
+    }, [id]); // Add id to dependency array
 
     if (!product) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
-                <p className="text-xl text-gray-600">Product Not Found</p>
+                <div className="text-center">
+                    <p className="text-xl text-gray-600 mb-4">Product Not Found</p>
+                    <Link to="/MarketPlace" className="text-green-600 hover:text-green-700 font-semibold">
+                        ← Back to Marketplace
+                    </Link>
+                </div>
             </div>
         );
     }
@@ -84,7 +102,7 @@ const ProductDetails = () => {
                             <img 
                                 src={images[selectedImage]} 
                                 alt={product.name}
-                                className="w-full h-96 object-contain"
+                                className="w-full h-96 object-cover rounded-lg"
                             />
                         </div>
 
@@ -94,11 +112,11 @@ const ProductDetails = () => {
                                 <div 
                                     key={idx}
                                     onClick={() => setSelectedImage(idx)}
-                                    className={`bg-white border-2 rounded-lg p-2 cursor-pointer transition-all shadow-sm ${
+                                    className={`bg-white border-2 rounded-lg p-2 cursor-pointer transition-all shadow-sm flex-1 ${
                                         selectedImage === idx ? 'border-green-600' : 'border-gray-200 hover:border-gray-400'
                                     }`}
                                 >
-                                    <img src={img} alt="" className="w-16 h-16 object-contain" />
+                                    <img src={img} alt="" className="w-full h-16 object-cover rounded" />
                                 </div>
                             ))}
                         </div>
@@ -120,7 +138,7 @@ const ProductDetails = () => {
                     <div className="flex-1">
                         {/* Breadcrumb */}
                         <div className="text-xs text-gray-500 mb-3">
-                            <Link to="/" className="hover:text-green-600">Home</Link> › Fresh Produce › {product.name}
+                            <Link to="/" className="hover:text-green-600">Home</Link> › <Link to="/MarketPlace" className="hover:text-green-600">Fresh Produce</Link> › {product.name}
                         </div>
 
                         {/* Product Name */}
@@ -159,7 +177,7 @@ const ProductDetails = () => {
                                 )}
                             </div>
                             <div className="text-sm text-gray-500">
-                                Per kg/unit • Free delivery above ₹500
+                                Per {product.unit || 'kg'} • Free delivery above ₹500
                             </div>
                         </div>
 

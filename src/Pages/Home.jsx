@@ -1,10 +1,9 @@
 import React from 'react'
-import Hero from '../HeroSction/Hero'
-import PriceTicker from '../HeroSction/PriceTicker'
-import Products from './Products'
-import products from '../Data/Products'
-import LivePricesSection from '../HeroSction/LivePriceSection'
+import Hero from '../HeroSection/Hero'
+import PriceTicker from '../HeroSection/PriceTicker'
 
+import LivePricesSection from '../HeroSection/LivePriceSection'
+import MarketplaceSection from './MarketplaceSection'
 
 const Home = () => {
   return (
@@ -12,7 +11,8 @@ const Home = () => {
       <Hero />
       <PriceTicker />
       <LivePricesSection />
-      <Products products={products} />
+      <MarketplaceSection />
+      
     </div>
   )
 }

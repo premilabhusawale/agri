@@ -1,13 +1,14 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
-import { motion } from 'framer-motion';
+import { useNavigate } from 'react-router-dom';
 import { MapPin, Star, ShoppingCart, Heart } from 'lucide-react';
 
-const Card = ({ product, onAddToCart }) => {
+const Card = ({ product, onAddToCart, viewMode }) => {
+  const navigate = useNavigate();
+
   const handleAddToCart = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (product.stock && onAddToCart) {
+    if (product.stock !== false && onAddToCart) {
       onAddToCart(product);
     }
   };
@@ -16,18 +17,26 @@ const Card = ({ product, onAddToCart }) => {
     e.preventDefault();
     e.stopPropagation();
     // Handle wishlist logic here
+    console.log('Added to wishlist:', product.name);
   };
 
+  const handleCardClick = () => {
+    // Navigate to product details using the correct route
+    navigate(`/ProductDetails/${product.id}`);
+  };
+
+  // Default stock to true if not specified
+  const isInStock = product.stock !== false;
+
   return (
-    <Link 
-      to={`/product/${product.id}`} 
-      className="no-underline block group"
+    <div 
+      onClick={handleCardClick}
+      className="cursor-pointer block group no-underline"
+      role="button"
+      tabIndex={0}
       aria-label={`View details for ${product.name}`}
     >
-      <motion.article
-        whileHover={{ y: -5 }}
-        className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all overflow-hidden h-full flex flex-col"
-      >
+      <article className="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all duration-300 overflow-hidden h-full flex flex-col transform hover:-translate-y-1">
         {/* Image Section */}
         <div className="relative aspect-[4/3] overflow-hidden">
           <img
@@ -39,18 +48,18 @@ const Card = ({ product, onAddToCart }) => {
           <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
           
           {/* Badges */}
-          <div className="absolute top-3 left-3 flex gap-2">
+          <div className="absolute top-3 left-3 flex gap-2 flex-wrap">
             {product.organic && (
               <span className="px-3 py-1 rounded-full bg-green-500 text-white text-xs font-semibold shadow-md">
                 🌿 Organic
               </span>
             )}
-            {product.stock && (
+            {isInStock && (
               <span className="px-3 py-1 rounded-full bg-emerald-500 text-white text-xs font-semibold shadow-md">
                 In Stock
               </span>
             )}
-            {!product.stock && (
+            {!isInStock && (
               <span className="px-3 py-1 rounded-full bg-red-500 text-white text-xs font-semibold shadow-md">
                 Out of Stock
               </span>
@@ -83,7 +92,7 @@ const Card = ({ product, onAddToCart }) => {
             {product.name}
           </h3>
           
-          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3">
+          <div className="flex items-center gap-2 text-sm text-gray-600 mb-3 flex-wrap">
             {product.farmer && (
               <>
                 <span>by {product.farmer}</span>
@@ -92,18 +101,20 @@ const Card = ({ product, onAddToCart }) => {
             )}
             <div className="flex items-center gap-1">
               <MapPin className="w-3.5 h-3.5" />
-              {product.location || 'Local'}
+              <span>{product.location || 'Local'}</span>
             </div>
           </div>
 
-          <p className="text-sm text-gray-600 mb-3 flex-grow line-clamp-2">
-            {product.description}
-          </p>
+          {product.description && (
+            <p className="text-sm text-gray-600 mb-3 flex-grow line-clamp-2">
+              {product.description}
+            </p>
+          )}
 
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-4 flex-wrap gap-2">
             <div className="flex items-center gap-1">
               <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-              <span className="font-semibold text-gray-900">{product.rating}</span>
+              <span className="font-semibold text-gray-900">{product.rating || 4.5}</span>
               <span className="text-sm text-gray-500">
                 ({product.reviews || 124} reviews)
               </span>
@@ -118,20 +129,29 @@ const Card = ({ product, onAddToCart }) => {
           {/* Add to Cart Button */}
           <button
             onClick={handleAddToCart}
-            disabled={!product.stock}
+            disabled={!isInStock}
             className={`w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg font-semibold text-sm transition-all duration-200 shadow-md ${
-              product.stock
+              isInStock
                 ? 'bg-gradient-to-r from-green-500 to-green-600 text-white hover:from-green-600 hover:to-green-700 hover:shadow-lg active:scale-95'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
             aria-label={`Add ${product.name} to cart`}
           >
             <ShoppingCart className="w-4 h-4" />
-            {product.stock ? 'Add to Cart' : 'Out of Stock'}
+            {isInStock ? 'Add to Cart' : 'Out of Stock'}
           </button>
         </div>
-      </motion.article>
-    </Link>
+      </article>
+
+      <style jsx>{`
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
+    </div>
   );
 };
 

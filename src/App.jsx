@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
 import Home from "./Pages/Home";
@@ -13,27 +13,38 @@ import Cart from "./Pages/Cart";
 import Wishlist from "./Pages/Wishlist";
 import Orders from "./Pages/Orders";
 import Accounts from "./Pages/Accounts";
+import LivePricesSection from "./HeroSection/LivePriceSection";
 
-const App = () => {
+const AppContent = () => {
+  const location = useLocation();
+  const hideLayout = location.pathname === '/Auth' || location.pathname === '/Account';
+
   return (
-    <Router>
-      <Header />
-
+    <>
+      {!hideLayout && <Header />}
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/LivePrices" element={<LivePrices />} />
         <Route path="/MarketPlace" element={<MarketPlace />} />
-        <Route path="/product/:id" element={<ProductDetails />} />
         <Route path="/ForFarmers" element={<ForFarmers />} />
         <Route path="/About" element={<About />} />
+        <Route path="/LivePriceSection" element={<LivePricesSection />} />
         <Route path="/Auth" element={<Auth />} />
-        <Route path="/Account" element={<Accounts />} />
+        <Route path="/ProductDetails/:id" element={<ProductDetails />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Orders" element={<Orders />} />
+        <Route path="/Account" element={<Accounts />} />
       </Routes>
+      {!hideLayout && <Footer />}
+    </>
+  );
+};
 
-      <Footer />
+const App = () => {
+  return (
+    <Router>
+      <AppContent />
     </Router>
   );
 };
