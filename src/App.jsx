@@ -34,7 +34,7 @@ const AppContent = () => {
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Orders" element={<Orders />} />
-        <Route path="/Account" element={<Accounts />} />
+        <Route path="/Accounts" element={<Accounts/>} />
       </Routes>
       {!hideLayout && <Footer />}
     </>
