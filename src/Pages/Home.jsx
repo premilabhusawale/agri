@@ -5,6 +5,7 @@ import PriceTicker from '../HeroSection/PriceTicker'
 import LivePricesSection from '../HeroSection/LivePriceSection'
 import MarketplaceSection from './MarketplaceSection'
 import HowItWorks from '../Components/HowItWorks'
+import Accounts from './Accounts'
 
 const Home = () => {
   return (
@@ -13,8 +14,9 @@ const Home = () => {
       <PriceTicker />
       <LivePricesSection />
       <MarketplaceSection />
-      <HowItWorks/>
-      
+      <HowItWorks />
+
+
     </div>
   )
 }
