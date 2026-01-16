@@ -1,3 +1,4 @@
+import { useNavigate } from 'react-router-dom';
 import { 
   Leaf, TrendingUp, Users, Wallet, Truck, 
   Shield, BarChart3, MessageSquare, CheckCircle2,
@@ -5,6 +6,8 @@ import {
 } from 'lucide-react';
 
 const ForFarmers = () => {
+  const navigate = useNavigate();
+
   const benefits = [
     {
       icon: Wallet,
@@ -77,21 +80,21 @@ const ForFarmers = () => {
     {
       name: 'Ramesh Yadav',
       farm: 'Green Valley Farms, Punjab',
-      image: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&h=100&fit=crop',
+      image: 'https://i.pinimg.com/736x/c3/13/a9/c313a9e98737a3972160ac2ce20b10fe.jpg',
       quote: 'Since joining AgriConnect, my income has increased by 35%. I now sell directly to families who appreciate quality produce.',
       rating: 5,
     },
     {
       name: 'Lakshmi Devi',
       farm: 'Organic Fields, Karnataka',
-      image: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=100&h=100&fit=crop',
+      image: 'https://i.pinimg.com/736x/7b/92/61/7b9261741456fbd2ad1cd24658758041.jpg',
       quote: 'The platform is so easy to use. I can manage all my orders from my phone while working in the fields.',
       rating: 5,
     },
     {
       name: 'Suresh Patel',
       farm: 'Fresh Harvest, Gujarat',
-      image: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=100&h=100&fit=crop',
+      image: 'https://i.pinimg.com/736x/67/39/18/6739180698b78019b9e96148e47f2ba2.jpg',
       quote: 'No more haggling with middlemen. I set my prices, and customers pay fairly for my hard work.',
       rating: 5,
     },
@@ -117,7 +120,7 @@ const ForFarmers = () => {
   ];
 
   const handleNavigateToAuth = () => {
-    window.location.href = '/auth';
+    navigate('/Auth');
   };
 
   const scrollToHowItWorks = () => {
@@ -185,7 +188,7 @@ const ForFarmers = () => {
             
             <div className="hidden lg:block">
               <img
-                src="https://images.unsplash.com/photo-1592982537447-7440770cbfc9?w=600"
+                src="https://i.pinimg.com/736x/95/58/c6/9558c6ed6831cc65c27bb3e926462eba.jpg"
                 alt="Happy farmer"
                 className="rounded-2xl shadow-2xl"
               />
