@@ -12,7 +12,7 @@ import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import Wishlist from "./Pages/Wishlist";
 import Orders from "./Pages/Orders";
-import Accounts from "./Pages/Accounts";
+import Accounts from "./Pages/Accounts";    
 import LivePricesSection from "./HeroSection/LivePriceSection";
 
 const AppContent = () => {
