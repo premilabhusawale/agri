@@ -143,12 +143,7 @@ const Wishlist = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <header className="bg-white shadow-sm border-b">
-        <div className="container mx-auto px-4 py-4">
-          <h1 className="text-2xl font-bold text-gray-800">FarmConnect</h1>
-        </div>
-      </header>
+      
 
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
