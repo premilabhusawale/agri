@@ -12,7 +12,8 @@ import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import Wishlist from "./Pages/Wishlist";
 import Orders from "./Pages/Orders";
-import Accounts from "./Pages/Accounts";    
+import Accounts from "./Pages/Accounts";  
+import Messages from "./Pages/Messages";
 import LivePricesSection from "./HeroSection/LivePriceSection";
 
 const AppContent = () => {
@@ -35,6 +36,7 @@ const AppContent = () => {
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Orders" element={<Orders />} />
         <Route path="/Accounts" element={<Accounts/>} />
+        <Route path="/Messages" element={<Messages />} />
       </Routes>
       {!hideLayout && <Footer />}
     </>

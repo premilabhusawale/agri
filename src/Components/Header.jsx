@@ -1,6 +1,7 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
-import { Leaf, User, Search } from 'lucide-react'
+import { Leaf, User, Search, MessageSquare } from 'lucide-react'
+
 
 // Import your existing Dropdown component
 import Dropdown from './ui/Dropdown'
@@ -22,38 +23,65 @@ const TopBar = ({ search, setSearch, isLoggedIn }) => {
         </span>
       </Link>
 
-    <div className="relative w-full max-w-xl mx-auto">
-  <input
-    type="text"
-    placeholder="Search crops, farmers..."
-    value={search}
-    onChange={(e) => setSearch(e.target.value)}
-    className="w-full pl-10 pr-4 py-2 rounded-lg
-               bg-white/90
-               border border-gray-300
-               text-black placeholder-gray-400
-               focus:outline-none focus:ring-2 focus:ring-green-500"
-  />
-  <Search
-    className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
-    size={20}
-  />
-</div>
-
-
+      <div className="relative w-full max-w-xl mx-auto">
+        <input
+          type="text"
+          placeholder="Search crops, farmers..."
+          value={search}
+          onChange={(e) => setSearch(e.target.value)}
+          className="w-full pl-10 pr-4 py-2 rounded-lg
+                   bg-white/90
+                   border border-gray-300
+                   text-black placeholder-gray-400
+                   focus:outline-none focus:ring-2 focus:ring-green-500"
+        />
+        <Search
+          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"
+          size={20}
+        />
+      </div>
 
       {/* Authentication Section on Right */}
       <div className="flex gap-3 ml-8">
         {isLoggedIn ? (
-          <Dropdown />
+          <>
+            {/* Messages Button */}
+            <button
+              onClick={() => navigate('/messages')}
+              className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium text-base transition-all duration-200 ease-out border border-white/20 hover:border-white/30 relative"
+              title="Messages"
+            >
+              <MessageSquare size={20} strokeWidth={2} />
+              <span>Messages</span>
+              {/* Optional: Unread message badge */}
+              {/* <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                3
+              </span> */}
+            </button>
+            
+            {/* User Dropdown */}
+            <Dropdown />
+          </>
         ) : (
-          <button
-            onClick={() => navigate('/Auth')}
-            className="bg-amber-500 px-6 py-2 rounded-lg flex items-center gap-2.5 text-black font-bold text-base transition-all duration-200 ease-out shadow-md hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-md"
-          >
-            <User size={20} strokeWidth={2.5} />
-            <span className="text-black">Login</span>
-          </button>
+          <>
+            {/* Messages Button for Non-logged in users - redirects to auth */}
+            <button
+              onClick={() => navigate('/Auth')}
+              className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium text-base transition-all duration-200 ease-out border border-white/20 hover:border-white/30"
+              title="Login to view messages"
+            >
+              <MessageSquare size={20} strokeWidth={2} />
+            </button>
+
+            {/* Login Button */}
+            <button
+              onClick={() => navigate('/Auth')}
+              className="bg-amber-500 px-6 py-2 rounded-lg flex items-center gap-2.5 text-black font-bold text-base transition-all duration-200 ease-out shadow-md hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-md"
+            >
+              <User size={20} strokeWidth={2.5} />
+              <span className="text-black">Login</span>
+            </button>
+          </>
         )}
       </div>
     </div>
