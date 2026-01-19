@@ -2,6 +2,8 @@ import React from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
+import ChatBot from "./Components/ChatBot"; // Add this import
+
 import Home from "./Pages/Home";
 import LivePrices from "./Pages/LivePrices";
 import MarketPlace from "./Pages/MarketPlace";
@@ -17,7 +19,7 @@ import LivePricesSection from "./HeroSection/LivePriceSection";
 
 const AppContent = () => {
   const location = useLocation();
-  const hideLayout = location.pathname === '/Auth' || location.pathname === '/Account';
+  const hideLayout = location.pathname === '/Auth' || location.pathname === '/Accounts';
 
   return (
     <>
@@ -37,6 +39,9 @@ const AppContent = () => {
         <Route path="/Accounts" element={<Accounts/>} />
       </Routes>
       {!hideLayout && <Footer />}
+      
+      {/* ChatBot will appear on all pages as a floating button */}
+      <ChatBot />
     </>
   );
 };
