@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { TrendingUp, TrendingDown, RefreshCw, MapPin, Filter, Download, Share2, Bell, Clock } from "lucide-react";
+import { TrendingUp, TrendingDown, RefreshCw, MapPin, Filter, Download, Share2, Bell, Clock, ChevronDown } from "lucide-react";
 import {
   LineChart,
   Line,
@@ -22,23 +22,94 @@ const LivePricesComponent = ({
   const [selectedCrop, setSelectedCrop] = useState("tomatoes");
   const [timeRange, setTimeRange] = useState("7d");
   const [chartType, setChartType] = useState("line");
-  const [selectedMarket, setSelectedMarket] = useState("all");
+  const [selectedState, setSelectedState] = useState("all");
+  const [selectedDistrict, setSelectedDistrict] = useState("all");
   const [showFilters, setShowFilters] = useState(false);
   const [autoRefresh, setAutoRefresh] = useState(false);
   const [lastUpdated, setLastUpdated] = useState(new Date());
 
-  const crops = [
-    { id: "tomatoes", name: "Tomatoes", emoji: "🍅", price: 45, change: 5.2, high: 52, low: 38, volume: "2.5k tons", market: "Nashik" },
-    { id: "potatoes", name: "Potatoes", emoji: "🥔", price: 28, change: -2.1, high: 32, low: 25, volume: "5.2k tons", market: "Agra" },
-    { id: "onions", name: "Onions", emoji: "🧅", price: 35, change: 8.5, high: 42, low: 28, volume: "3.8k tons", market: "Lasalgaon" },
-    { id: "rice", name: "Rice", emoji: "🌾", price: 52, change: 0, high: 55, low: 48, volume: "8.1k tons", market: "Karnal" },
-    { id: "wheat", name: "Wheat", emoji: "🌾", price: 38, change: 3.2, high: 42, low: 35, volume: "6.5k tons", market: "Punjab" },
-    { id: "carrots", name: "Carrots", emoji: "🥕", price: 40, change: -1.5, high: 45, low: 36, volume: "1.9k tons", market: "Ooty" },
-    { id: "cabbage", name: "Cabbage", emoji: "🥬", price: 25, change: 4.8, high: 28, low: 22, volume: "2.1k tons", market: "Shimla" },
-    { id: "apples", name: "Apples", emoji: "🍎", price: 120, change: -3.2, high: 130, low: 110, volume: "1.2k tons", market: "Kashmir" },
+  // Indian States with agricultural markets
+  const states = [
+    "all",
+    "Maharashtra",
+    "Punjab",
+    "Haryana",
+    "Uttar Pradesh",
+    "Karnataka",
+    "Tamil Nadu",
+    "Gujarat",
+    "Rajasthan",
+    "Madhya Pradesh",
+    "West Bengal"
   ];
 
-  const markets = ["all", "Nashik", "Agra", "Lasalgaon", "Karnal", "Punjab", "Ooty", "Shimla", "Kashmir"];
+  // Maharashtra Districts
+  const maharashtraDistricts = [
+    "all",
+    "Nashik",
+    "Pune",
+    "Ahmednagar",
+    "Aurangabad",
+    "Jalgaon",
+    "Solapur",
+    "Kolhapur",
+    "Sangli",
+    "Satara",
+    "Latur",
+    "Beed",
+    "Nanded",
+    "Mumbai",
+    "Thane",
+    "Raigad",
+    "Nagpur",
+    "Amravati",
+    "Akola",
+    "Yavatmal"
+  ];
+
+  // Expanded crop data with state and district information
+  const crops = [
+    // Maharashtra - Nashik
+    { id: "tom-nash", name: "Tomatoes", emoji: "🍅", price: 45, change: 5.2, high: 52, low: 38, volume: "2.5k tons", state: "Maharashtra", district: "Nashik" },
+    { id: "oni-nash", name: "Onions", emoji: "🧅", price: 35, change: 8.5, high: 42, low: 28, volume: "3.8k tons", state: "Maharashtra", district: "Nashik" },
+    { id: "gra-nash", name: "Grapes", emoji: "🍇", price: 80, change: 2.1, high: 85, low: 75, volume: "1.2k tons", state: "Maharashtra", district: "Nashik" },
+    
+    // Maharashtra - Pune
+    { id: "tom-pune", name: "Tomatoes", emoji: "🍅", price: 48, change: 4.5, high: 54, low: 42, volume: "2.1k tons", state: "Maharashtra", district: "Pune" },
+    { id: "cab-pune", name: "Cabbage", emoji: "🥬", price: 22, change: -1.2, high: 25, low: 20, volume: "1.5k tons", state: "Maharashtra", district: "Pune" },
+    { id: "car-pune", name: "Carrots", emoji: "🥕", price: 38, change: 3.5, high: 42, low: 35, volume: "1.8k tons", state: "Maharashtra", district: "Pune" },
+    
+    // Maharashtra - Latur
+    { id: "oni-latur", name: "Onions", emoji: "🧅", price: 32, change: 6.8, high: 38, low: 28, volume: "2.9k tons", state: "Maharashtra", district: "Latur" },
+    { id: "pot-latur", name: "Potatoes", emoji: "🥔", price: 26, change: -1.5, high: 30, low: 24, volume: "3.2k tons", state: "Maharashtra", district: "Latur" },
+    
+    // Punjab
+    { id: "whe-pun", name: "Wheat", emoji: "🌾", price: 38, change: 3.2, high: 42, low: 35, volume: "6.5k tons", state: "Punjab", district: "Ludhiana" },
+    { id: "ric-pun", name: "Rice", emoji: "🌾", price: 52, change: 0, high: 55, low: 48, volume: "8.1k tons", state: "Punjab", district: "Amritsar" },
+    { id: "pot-pun", name: "Potatoes", emoji: "🥔", price: 30, change: 2.5, high: 34, low: 27, volume: "4.5k tons", state: "Punjab", district: "Jalandhar" },
+    
+    // Haryana
+    { id: "whe-har", name: "Wheat", emoji: "🌾", price: 39, change: 2.8, high: 43, low: 36, volume: "5.8k tons", state: "Haryana", district: "Karnal" },
+    { id: "ric-har", name: "Rice", emoji: "🌾", price: 53, change: 1.5, high: 56, low: 49, volume: "7.2k tons", state: "Haryana", district: "Kurukshetra" },
+    
+    // Uttar Pradesh
+    { id: "pot-up", name: "Potatoes", emoji: "🥔", price: 28, change: -2.1, high: 32, low: 25, volume: "5.2k tons", state: "Uttar Pradesh", district: "Agra" },
+    { id: "oni-up", name: "Onions", emoji: "🧅", price: 33, change: 5.5, high: 38, low: 30, volume: "3.5k tons", state: "Uttar Pradesh", district: "Lucknow" },
+    { id: "tom-up", name: "Tomatoes", emoji: "🍅", price: 42, change: 3.8, high: 48, low: 38, volume: "2.8k tons", state: "Uttar Pradesh", district: "Meerut" },
+    
+    // Karnataka
+    { id: "tom-kar", name: "Tomatoes", emoji: "🍅", price: 46, change: 4.2, high: 51, low: 40, volume: "2.3k tons", state: "Karnataka", district: "Bangalore" },
+    { id: "cof-kar", name: "Coffee", emoji: "☕", price: 320, change: 1.8, high: 335, low: 310, volume: "0.8k tons", state: "Karnataka", district: "Chikmagalur" },
+    { id: "car-kar", name: "Carrots", emoji: "🥕", price: 40, change: -1.5, high: 45, low: 36, volume: "1.9k tons", state: "Karnataka", district: "Ooty" },
+    
+    // Tamil Nadu
+    { id: "ric-tn", name: "Rice", emoji: "🌾", price: 54, change: 2.2, high: 58, low: 50, volume: "6.8k tons", state: "Tamil Nadu", district: "Thanjavur" },
+    { id: "tom-tn", name: "Tomatoes", emoji: "🍅", price: 44, change: 3.5, high: 49, low: 39, volume: "2.2k tons", state: "Tamil Nadu", district: "Coimbatore" },
+    
+    // Gujarat
+    { id: "cot-guj", name: "Cotton", emoji: "🌸", price: 125, change: 4.5, high: 135, low: 118, volume: "3.5k tons", state: "Gujarat", district: "Ahmedabad" },
+    { id: "oni-guj", name: "Onions", emoji: "🧅", price: 34, change: 7.2, high: 40, low: 29, volume: "3.2k tons", state: "Gujarat", district: "Surat" },
+  ];
 
   const chartDataByRange = {
     "24h": [
@@ -81,7 +152,7 @@ const LivePricesComponent = ({
     ],
   };
 
-  const selectedCropData = crops.find((c) => c.id === selectedCrop);
+  const selectedCropData = crops.find((c) => c.id === selectedCrop) || crops[0];
   const chartData = chartDataByRange[timeRange];
 
   useEffect(() => {
@@ -93,9 +164,19 @@ const LivePricesComponent = ({
     }
   }, [autoRefresh]);
 
-  const filteredCrops = selectedMarket === "all" 
-    ? crops 
-    : crops.filter(c => c.market === selectedMarket);
+  // Filter crops based on state and district
+  const filteredCrops = crops.filter(crop => {
+    const stateMatch = selectedState === "all" || crop.state === selectedState;
+    const districtMatch = selectedDistrict === "all" || crop.district === selectedDistrict;
+    return stateMatch && districtMatch;
+  });
+
+  // Reset district when state changes
+  useEffect(() => {
+    if (selectedState !== "Maharashtra") {
+      setSelectedDistrict("all");
+    }
+  }, [selectedState]);
 
   const themes = {
     orange: {
@@ -129,7 +210,7 @@ const LivePricesComponent = ({
   };
 
   const handleSetAlert = () => {
-    alert(`Price alert set for ${selectedCropData?.name}!`);
+    alert(`Price alert set for ${selectedCropData?.name} in ${selectedCropData?.district}, ${selectedCropData?.state}!`);
   };
 
   const renderChart = () => {
@@ -237,7 +318,7 @@ const LivePricesComponent = ({
           </h2>
           <p className="text-gray-600 max-w-2xl mx-auto">
             Stay informed with live market prices updated every hour from major agricultural markets
-            across the country.
+            across India.
           </p>
         </motion.div>
       )}
@@ -297,21 +378,61 @@ const LivePricesComponent = ({
             exit={{ opacity: 0, height: 0 }}
             className="bg-white border border-gray-200 rounded-lg p-4 mb-6 shadow-sm"
           >
-            <div className="flex flex-wrap gap-4 items-center">
-              <div className="flex items-center gap-2">
-                <MapPin className="w-4 h-4 text-gray-600" />
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="flex flex-col gap-2">
+                <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                  <MapPin className="w-4 h-4 text-gray-600" />
+                  Select State
+                </label>
                 <select
-                  value={selectedMarket}
-                  onChange={(e) => setSelectedMarket(e.target.value)}
-                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm"
+                  value={selectedState}
+                  onChange={(e) => setSelectedState(e.target.value)}
+                  className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm bg-white"
                 >
-                  {markets.map(market => (
-                    <option key={market} value={market}>
-                      {market === "all" ? "All Markets" : market}
+                  {states.map(state => (
+                    <option key={state} value={state}>
+                      {state === "all" ? "All States" : state}
                     </option>
                   ))}
                 </select>
               </div>
+
+              {selectedState === "Maharashtra" && (
+                <div className="flex flex-col gap-2">
+                  <label className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-gray-600" />
+                    Select District (Maharashtra)
+                  </label>
+                  <select
+                    value={selectedDistrict}
+                    onChange={(e) => setSelectedDistrict(e.target.value)}
+                    className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm bg-white"
+                  >
+                    {maharashtraDistricts.map(district => (
+                      <option key={district} value={district}>
+                        {district === "all" ? "All Districts" : district}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
+            </div>
+
+            <div className="mt-4 flex items-center justify-between">
+              <div className="text-sm text-gray-600">
+                Showing {filteredCrops.length} products
+                {selectedState !== "all" && ` in ${selectedState}`}
+                {selectedDistrict !== "all" && ` - ${selectedDistrict}`}
+              </div>
+              <button
+                onClick={() => {
+                  setSelectedState("all");
+                  setSelectedDistrict("all");
+                }}
+                className="text-sm text-green-600 hover:text-green-700 font-medium"
+              >
+                Clear Filters
+              </button>
             </div>
           </motion.div>
         )}
@@ -326,56 +447,76 @@ const LivePricesComponent = ({
           </div>
           
           <div className="space-y-3 max-h-[600px] overflow-y-auto pr-2 scrollbar-thin">
-            {filteredCrops.map((crop) => (
-              <motion.div
-                key={crop.id}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setSelectedCrop(crop.id)}
-                className={`p-4 rounded-xl cursor-pointer transition-all ${
-                  selectedCrop === crop.id
-                    ? `${currentTheme.selectedBg} text-white shadow-lg`
-                    : "bg-white hover:bg-gray-50 shadow-sm border border-gray-200"
-                }`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center gap-3">
-                    <span className="text-2xl">{crop.emoji}</span>
-                    <div>
-                      <h4 className="font-semibold">{crop.name}</h4>
-                      <p className={`text-xs ${selectedCrop === crop.id ? "text-white/70" : "text-gray-500"}`}>
-                        {crop.market} • {crop.volume}
-                      </p>
+            {filteredCrops.length === 0 ? (
+              <div className="text-center py-12 text-gray-500">
+                <MapPin className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+                <p>No products available for selected location</p>
+                <button
+                  onClick={() => {
+                    setSelectedState("all");
+                    setSelectedDistrict("all");
+                  }}
+                  className="mt-4 text-sm text-green-600 hover:text-green-700 font-medium"
+                >
+                  View all locations
+                </button>
+              </div>
+            ) : (
+              filteredCrops.map((crop) => (
+                <motion.div
+                  key={crop.id}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => setSelectedCrop(crop.id)}
+                  className={`p-4 rounded-xl cursor-pointer transition-all ${
+                    selectedCrop === crop.id
+                      ? `${currentTheme.selectedBg} text-white shadow-lg`
+                      : "bg-white hover:bg-gray-50 shadow-sm border border-gray-200"
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{crop.emoji}</span>
+                      <div>
+                        <h4 className="font-semibold">{crop.name}</h4>
+                        <p className={`text-xs flex items-center gap-1 ${selectedCrop === crop.id ? "text-white/70" : "text-gray-500"}`}>
+                          <MapPin className="w-3 h-3" />
+                          {crop.district}, {crop.state}
+                        </p>
+                        <p className={`text-xs ${selectedCrop === crop.id ? "text-white/60" : "text-gray-400"}`}>
+                          {crop.volume}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <div className="text-xl font-bold">₹{crop.price}</div>
+                      <div
+                        className={`flex items-center gap-1 text-sm ${
+                          crop.change > 0
+                            ? selectedCrop === crop.id ? "text-green-300" : "text-green-600"
+                            : crop.change < 0
+                            ? "text-red-600"
+                            : selectedCrop === crop.id ? "text-white/70" : "text-gray-600"
+                        }`}
+                      >
+                        {crop.change > 0 ? (
+                          <TrendingUp className="w-4 h-4" />
+                        ) : crop.change < 0 ? (
+                          <TrendingDown className="w-4 h-4" />
+                        ) : null}
+                        {crop.change > 0 ? "+" : ""}
+                        {crop.change}%
+                      </div>
                     </div>
                   </div>
-                  <div className="text-right">
-                    <div className="text-xl font-bold">₹{crop.price}</div>
-                    <div
-                      className={`flex items-center gap-1 text-sm ${
-                        crop.change > 0
-                          ? selectedCrop === crop.id ? "text-green-300" : "text-green-600"
-                          : crop.change < 0
-                          ? "text-red-600"
-                          : selectedCrop === crop.id ? "text-white/70" : "text-gray-600"
-                      }`}
-                    >
-                      {crop.change > 0 ? (
-                        <TrendingUp className="w-4 h-4" />
-                      ) : crop.change < 0 ? (
-                        <TrendingDown className="w-4 h-4" />
-                      ) : null}
-                      {crop.change > 0 ? "+" : ""}
-                      {crop.change}%
-                    </div>
+                  <div className={`text-xs pt-2 border-t ${selectedCrop === crop.id ? "border-white/20" : "border-gray-200"}`}>
+                    <span className={selectedCrop === crop.id ? "text-white/70" : "text-gray-600"}>
+                      High: ₹{crop.high} • Low: ₹{crop.low}
+                    </span>
                   </div>
-                </div>
-                <div className={`text-xs pt-2 border-t ${selectedCrop === crop.id ? "border-white/20" : "border-gray-200"}`}>
-                  <span className={selectedCrop === crop.id ? "text-white/70" : "text-gray-600"}>
-                    High: ₹{crop.high} • Low: ₹{crop.low}
-                  </span>
-                </div>
-              </motion.div>
-            ))}
+                </motion.div>
+              ))
+            )}
           </div>
         </div>
 
@@ -388,7 +529,7 @@ const LivePricesComponent = ({
               </h3>
               <p className="text-sm text-gray-600 mt-1 flex items-center gap-2">
                 <MapPin className="w-3 h-3" />
-                {selectedCropData?.market} Market
+                {selectedCropData?.district}, {selectedCropData?.state}
               </p>
             </div>
             <div className="mt-4 md:mt-0 text-left md:text-right">

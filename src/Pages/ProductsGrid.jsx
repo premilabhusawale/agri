@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSearchParams } from "react-router-dom";
 import { Filter, Search, ChevronDown, Grid3x3, List, X, SlidersHorizontal } from "lucide-react";
 import Card from './Card';
 import products from '../Data/Products';
@@ -8,9 +9,12 @@ const ProductsGrid = ({
   headerTitle = "Marketplace",
   headerSubtitle = "Browse fresh produce directly from verified farmers. Quality guaranteed, fair prices always.",
 }) => {
+  const [searchParams] = useSearchParams();
+  const urlSearchQuery = searchParams.get('search') || '';
+
   const [viewMode, setViewMode] = useState("grid");
   const [activeCategory, setActiveCategory] = useState("all");
-  const [searchQuery, setSearchQuery] = useState("");
+  const [searchQuery, setSearchQuery] = useState(urlSearchQuery);
   const [sortBy, setSortBy] = useState("featured");
   const [showFilters, setShowFilters] = useState(false);
   
@@ -20,6 +24,13 @@ const ProductsGrid = ({
   const [onlyOrganic, setOnlyOrganic] = useState(false);
   const [onlyInStock, setOnlyInStock] = useState(false);
   const [minRating, setMinRating] = useState(0);
+
+  // Update search query when URL changes
+  useEffect(() => {
+    if (urlSearchQuery) {
+      setSearchQuery(urlSearchQuery);
+    }
+  }, [urlSearchQuery]);
 
   const categories = [
     { id: "all", name: "All", emoji: "🌾" },
