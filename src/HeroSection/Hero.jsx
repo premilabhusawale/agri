@@ -85,7 +85,7 @@ const Hero = () => {
       </div>
 
       {/* Content */}
-      <div className="container mx-auto px-4 relative z-10 py-16 bg-gradient-to-tr from-slate-900/90 via-slate-900/70 to-transparent p-8 lg:p-16">
+      <div className="w-full px-4 relative z-10 py-16 bg-gradient-to-tr from-slate-900/90 via-slate-900/70 to-transparent p-8 lg:p-16">
         <div className="max-w-3xl">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
