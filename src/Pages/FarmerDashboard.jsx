@@ -5,8 +5,6 @@ import {
   Edit, Trash2, Eye, EyeOff, MessageSquare 
 } from 'lucide-react';
 
-import Header from '../components/Header';
-
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   
@@ -157,8 +155,6 @@ const FarmerDashboard = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Header />
-      
       <main className="container mx-auto px-4 py-8">
         <div className="flex items-center justify-between mb-8">
           <div>
