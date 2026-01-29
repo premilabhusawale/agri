@@ -367,6 +367,7 @@ const NavBar = () => {
             to="/FarmerDashboard"
             className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
           >FarmerDashboard</Link>
+          
         </div>
       </div>
     </nav>
