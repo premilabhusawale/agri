@@ -13,7 +13,6 @@ import Auth from "./Pages/Auth";
 import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import Wishlist from "./Pages/Wishlist";
-import Checkout from "./Pages/Checkout";
 import Orders from "./Pages/Orders";
 import Accounts from "./Pages/Accounts";
 import Messages from "./Pages/Messages";
@@ -38,7 +37,6 @@ const AppContent = () => {
         <Route path="/ProductDetails/:id" element={<ProductDetails />} />
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Wishlist" element={<Wishlist />} />
-        <Route path="/Checkout" element={<Checkout />} />
         <Route path="/Orders" element={<Orders />} />
         <Route path="/Accounts" element={<Accounts />} />
         <Route path="/Messages" element={<Messages />} />

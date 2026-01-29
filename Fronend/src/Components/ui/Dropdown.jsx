@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt, FaShoppingCart} from "react-icons/fa";
+import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
 
 const Dropdown = () => {
@@ -89,14 +89,6 @@ const Dropdown = () => {
         >
           <FaHeart className="text-gray-500" />
           Wishlist
-        </button>
-
-        <button
-          onClick={() => handleNavigation("/Wishlist")}
-          className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
-        >
-          <FaShoppingCart className="text-gray-500" />
-          Checkout
         </button>
         <div className="border-t border-gray-200">
           <button
