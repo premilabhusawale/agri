@@ -13,6 +13,7 @@ const ProductDetails = () => {
     // Match product by string ID
     const product = products.find((item) => item.id === id);
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => {
         // Reset states when product ID changes
         setIsLoaded(false);
@@ -28,7 +29,7 @@ const ProductDetails = () => {
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [id]);
+    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
 
     if (!product) {
         return (

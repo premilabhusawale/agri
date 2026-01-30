@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { MapPin, Star, ShoppingCart, Heart } from 'lucide-react';
 
-const Card = ({ product, onAddToCart, viewMode }) => {
+const Card = ({ product, onAddToCart }) => {
   const navigate = useNavigate();
 
   const handleAddToCart = (e) => {

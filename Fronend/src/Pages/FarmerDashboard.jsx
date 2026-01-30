@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { 
   Plus, Package, ShoppingBag, TrendingUp, 
@@ -8,8 +8,52 @@ import {
 const FarmerDashboard = () => {
   const navigate = useNavigate();
   
-  const [products, setProducts] = useState([]);
-  const [orders, setOrders] = useState([]);
+  const [products, setProducts] = useState([
+    {
+      id: '1',
+      name: 'Fresh Tomatoes',
+      description: 'Organic tomatoes',
+      price: 50,
+      quantity: 100,
+      unit: 'kg',
+      category: 'vegetables',
+      image_url: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400',
+      is_available: true
+    },
+    {
+      id: '2',
+      name: 'Green Apples',
+      description: 'Fresh green apples',
+      price: 120,
+      quantity: 50,
+      unit: 'kg',
+      category: 'fruits',
+      image_url: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400',
+      is_available: true
+    }
+  ]);
+  const [orders, setOrders] = useState([
+    {
+      id: '1',
+      status: 'pending',
+      total_amount: 500,
+      delivery_address: '123 Main St, City',
+      created_at: new Date().toISOString(),
+      buyer: {
+        full_name: 'Jane Buyer'
+      }
+    },
+    {
+      id: '2',
+      status: 'completed',
+      total_amount: 300,
+      delivery_address: '456 Oak St, Town',
+      created_at: new Date().toISOString(),
+      buyer: {
+        full_name: 'Bob Customer'
+      }
+    }
+  ]);
   const [isAddDialogOpen, setIsAddDialogOpen] = useState(false);
   const [editingProduct, setEditingProduct] = useState(null);
   
@@ -34,65 +78,6 @@ const FarmerDashboard = () => {
   const showToast = (title, description) => {
     alert(`${title}: ${description}`);
   };
-
-  const fetchProducts = () => {
-    // Mock data - replace with actual API call later
-    setProducts([
-      {
-        id: '1',
-        name: 'Fresh Tomatoes',
-        description: 'Organic tomatoes',
-        price: 50,
-        quantity: 100,
-        unit: 'kg',
-        category: 'vegetables',
-        image_url: 'https://images.unsplash.com/photo-1546094096-0df4bcaaa337?w=400',
-        is_available: true
-      },
-      {
-        id: '2',
-        name: 'Green Apples',
-        description: 'Fresh green apples',
-        price: 120,
-        quantity: 50,
-        unit: 'kg',
-        category: 'fruits',
-        image_url: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=400',
-        is_available: true
-      }
-    ]);
-  };
-
-  const fetchOrders = () => {
-    // Mock data - replace with actual API call later
-    setOrders([
-      {
-        id: '1',
-        status: 'pending',
-        total_amount: 500,
-        delivery_address: '123 Main St, City',
-        created_at: new Date().toISOString(),
-        buyer: {
-          full_name: 'Jane Buyer'
-        }
-      },
-      {
-        id: '2',
-        status: 'confirmed',
-        total_amount: 800,
-        delivery_address: '456 Park Ave, Town',
-        created_at: new Date(Date.now() - 86400000).toISOString(),
-        buyer: {
-          full_name: 'Bob Customer'
-        }
-      }
-    ]);
-  };
-
-  useEffect(() => {
-    fetchProducts();
-    fetchOrders();
-  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -180,7 +165,7 @@ const FarmerDashboard = () => {
             { label: 'Active Listings', value: stats.activeProducts, icon: Eye, color: 'text-green-500', bg: 'bg-green-50' },
             { label: 'Total Orders', value: stats.totalOrders, icon: ShoppingBag, color: 'text-purple-500', bg: 'bg-purple-50' },
             { label: 'Revenue', value: `₹${stats.revenue.toLocaleString()}`, icon: TrendingUp, color: 'text-amber-500', bg: 'bg-amber-50' },
-          ].map((stat, i) => (
+          ].map((stat) => (
             <div
               key={stat.label}
               className="bg-white border border-gray-200 rounded-xl p-4 shadow-sm"

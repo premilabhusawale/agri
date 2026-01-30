@@ -25,9 +25,9 @@ const Messages = () => {
   const messagesEndRef = useRef(null);
   
   // Mock auth context - replace with your actual auth implementation
-  const [profile, setProfile] = useState({ id: 'user1', role: 'buyer' });
-  const [user, setUser] = useState({ id: 'user1' });
-  const [loading, setLoading] = useState(false);
+  const [profile] = useState({ id: 'user1', role: 'buyer' });
+  const [user] = useState({ id: 'user1' });
+  const [loading] = useState(false);
   
   const [conversations, setConversations] = useState([]);
   const [selectedConversation, setSelectedConversation] = useState(null);
@@ -35,34 +35,7 @@ const Messages = () => {
   const [newMessage, setNewMessage] = useState('');
   const [pageLoading, setPageLoading] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isTyping, setIsTyping] = useState(false);
-
-  useEffect(() => {
-    if (!loading && !user) {
-      navigate('/auth');
-    }
-  }, [user, loading, navigate]);
-
-  useEffect(() => {
-    if (profile?.id) {
-      fetchConversations();
-      
-      const farmerId = location.state?.farmerId;
-      if (farmerId && farmerId !== profile.id) {
-        startOrSelectConversation(farmerId);
-      }
-    }
-  }, [profile, location.state]);
-
-  useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages();
-    }
-  }, [selectedConversation, profile]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  const [isTyping] = useState(false);
 
   const fetchConversations = async () => {
     // Mock implementation - replace with your actual API call
@@ -121,55 +94,76 @@ const Messages = () => {
       unread_count: 0,
       other_user: {
         id: farmerId,
-        full_name: 'New Contact',
+        full_name: 'New Farmer',
         avatar_url: '',
+        farm_name: 'New Farm',
         online: true
       }
     };
-    
     setConversations(prev => [conv, ...prev]);
     setSelectedConversation(conv);
   };
 
   const fetchMessages = async () => {
     if (!selectedConversation || !profile) return;
-    
-    // Mock implementation - replace with your actual API call
+
+    // Mock messages - replace with actual API call
     setMessages([
       {
         id: '1',
-        sender_id: 'farmer1',
-        receiver_id: profile.id,
-        content: 'Hello! I have fresh produce available.',
-        is_read: true,
-        created_at: new Date(Date.now() - 3600000).toISOString()
+        conversation_id: selectedConversation.id,
+        sender_id: selectedConversation.farmer_id,
+        content: 'Hello! I have fresh tomatoes available. Are you interested?',
+        created_at: new Date(Date.now() - 300000).toISOString(),
+        read: true
       },
       {
         id: '2',
+        conversation_id: selectedConversation.id,
         sender_id: profile.id,
-        receiver_id: 'farmer1',
-        content: 'Great! What do you have in stock?',
-        is_read: true,
-        created_at: new Date(Date.now() - 3000000).toISOString()
+        content: 'Yes, I am interested. What is the price per kg?',
+        created_at: new Date(Date.now() - 240000).toISOString(),
+        read: true
       },
       {
         id: '3',
-        sender_id: 'farmer1',
-        receiver_id: profile.id,
-        content: 'Fresh tomatoes, cucumbers, and lettuce. All organic!',
-        is_read: true,
-        created_at: new Date(Date.now() - 1800000).toISOString()
-      },
-      {
-        id: '4',
-        sender_id: profile.id,
-        receiver_id: 'farmer1',
-        content: 'Perfect! I\'ll take 5kg of tomatoes.',
-        is_read: false,
-        created_at: new Date(Date.now() - 300000).toISOString()
+        conversation_id: selectedConversation.id,
+        sender_id: selectedConversation.farmer_id,
+        content: '₹50 per kg. I can deliver tomorrow.',
+        created_at: new Date(Date.now() - 180000).toISOString(),
+        read: false
       }
     ]);
   };
+
+  useEffect(() => {
+    if (!loading && !user) {
+      navigate('/auth');
+    }
+  }, [user, loading, navigate]);
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (profile?.id) {
+      fetchConversations();
+      
+      const farmerId = location.state?.farmerId;
+      if (farmerId && farmerId !== profile.id) {
+        startOrSelectConversation(farmerId);
+      }
+    }
+  }, [profile, location.state]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // eslint-disable-next-line react-hooks/set-state-in-effect
+  useEffect(() => {
+    if (selectedConversation) {
+      fetchMessages();
+    }
+  }, [selectedConversation, profile]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages]);
 
   const sendMessage = async () => {
     if (!newMessage.trim() || !selectedConversation || !profile) return;

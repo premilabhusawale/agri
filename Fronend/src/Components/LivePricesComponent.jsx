@@ -171,13 +171,6 @@ const LivePricesComponent = ({
     return stateMatch && districtMatch;
   });
 
-  // Reset district when state changes
-  useEffect(() => {
-    if (selectedState !== "Maharashtra") {
-      setSelectedDistrict("all");
-    }
-  }, [selectedState]);
-
   const themes = {
     orange: {
       badgeBg: "bg-orange-100",
@@ -386,7 +379,12 @@ const LivePricesComponent = ({
                 </label>
                 <select
                   value={selectedState}
-                  onChange={(e) => setSelectedState(e.target.value)}
+                  onChange={(e) => {
+                    setSelectedState(e.target.value);
+                    if (e.target.value !== "Maharashtra") {
+                      setSelectedDistrict("all");
+                    }
+                  }}
                   className="px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 text-sm bg-white"
                 >
                   {states.map(state => (

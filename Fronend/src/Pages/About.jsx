@@ -82,7 +82,7 @@ const About = () => {
       <section className="py-16 bg-gradient-to-b from-white to-gray-50">
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-            {stats.map((stat, index) => (
+            {stats.map((stat) => (
               <div key={stat.label} className="text-center group">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-br from-green-400 to-green-600 text-white mb-4 shadow-lg group-hover:shadow-xl group-hover:scale-110 transition-all duration-300">
                   <stat.icon className="h-8 w-8" />
@@ -137,7 +137,7 @@ const About = () => {
             <p className="text-gray-600 max-w-2xl mx-auto">These core principles guide everything we do at AgriConnect.</p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {values.map((value, index) => (
+            {values.map((value) => (
               <div key={value.title} className="bg-white p-6 rounded-2xl border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300 group relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-green-50 to-green-100 rounded-full blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300 -mr-16 -mt-16"></div>
                 <div className="relative z-10">
@@ -160,7 +160,7 @@ const About = () => {
             <p className="text-gray-600 max-w-2xl mx-auto">Passionate individuals committed to transforming agriculture.</p>
           </div>
           <div className="grid md:grid-cols-3 gap-8 max-w-4xl mx-auto">
-            {team.map((member, index) => (
+            {team.map((member) => (
               <div key={member.name} className="text-center group">
                 <div className="w-36 h-36 rounded-full mx-auto mb-4 bg-gradient-to-br from-green-400 via-green-500 to-green-600 flex items-center justify-center border-4 border-white shadow-xl group-hover:shadow-2xl group-hover:scale-105 transition-all duration-300 relative overflow-hidden">
                   <div className="absolute inset-0 bg-gradient-to-t from-black/10 to-transparent"></div>

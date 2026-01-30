@@ -5,69 +5,54 @@ import { ShoppingCart, Trash2, Plus, Minus, ArrowRight, ShoppingBag } from 'luci
 const Cart = () => {
   const navigate = useNavigate();
   
-  const [cartItems, setCartItems] = useState([]);
-  const [cartLoading, setCartLoading] = useState(true);
-
-  useEffect(() => {
-    // Simulate fetching cart data
-    fetchCart();
-  }, []);
-
-  const fetchCart = async () => {
-    // Replace this with your actual API call
-    // Example data structure:
-    const sampleData = [
-      {
+  const [cartItems, setCartItems] = useState([
+    {
+      id: '1',
+      quantity: 2,
+      product: {
         id: '1',
-        quantity: 2,
-        product: {
-          id: '1',
-          name: 'Fresh Organic Tomatoes',
-          price: 50,
-          unit: 'kg',
-          image_url: 'https://i.pinimg.com/736x/b4/a8/7f/b4a87f01141685de432a7de9b3da60d2.jpg',
-          farmer_id: '1',
-          farmer: {
-            farm_name: 'Green Valley Farm'
-          }
-        }
-      },
-      {
-        id: '2',
-        quantity: 1,
-        product: {
-          id: '2',
-          name: 'Fresh Green Fenugreek',
-          price: 30,
-          unit: 'kg',
-          image_url: 'https://i.pinimg.com/736x/51/11/e8/5111e836749b161be7d6360f7a902c69.jpg',
-          farmer_id: '2',
-          farmer: {
-            farm_name: 'Organic Farms Co.'
-          }
-        }
-      },
-      {
-        id: '3',
-        quantity: 3,
-        product: {
-          id: '3',
-          name: 'Red Fresh Apples',
-          price: 120,
-          unit: 'kg',
-          image_url: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100',
-          farmer_id: '3',
-          farmer: {
-            farm_name: 'Hill View Orchards'
-          }
+        name: 'Fresh Organic Tomatoes',
+        price: 50,
+        unit: 'kg',
+        image_url: 'https://i.pinimg.com/736x/b4/a8/7f/b4a87f01141685de432a7de9b3da60d2.jpg',
+        farmer_id: '1',
+        farmer: {
+          farm_name: 'Green Valley Farm'
         }
       }
-    ];
-    
-    // Using sample data - remove this line when you connect to real API
-    setCartItems(sampleData);
-    setCartLoading(false);
-  };
+    },
+    {
+      id: '2',
+      quantity: 1,
+      product: {
+        id: '2',
+        name: 'Fresh Green Fenugreek',
+        price: 30,
+        unit: 'kg',
+        image_url: 'https://i.pinimg.com/736x/51/11/e8/5111e836749b161be7d6360f7a902c69.jpg',
+        farmer_id: '2',
+        farmer: {
+          farm_name: 'Organic Farms Co.'
+        }
+      }
+    },
+    {
+      id: '3',
+      quantity: 3,
+      product: {
+        id: '3',
+        name: 'Red Fresh Apples',
+        price: 120,
+        unit: 'kg',
+        image_url: 'https://images.unsplash.com/photo-1568702846914-96b305d2aaeb?w=100',
+        farmer_id: '3',
+        farmer: {
+          farm_name: 'Hill View Orchards'
+        }
+      }
+    }
+  ]);
+  const [cartLoading] = useState(false);
 
   const updateQuantity = async (itemId, newQuantity) => {
     if (newQuantity < 1) {

@@ -374,7 +374,7 @@ const NavBar = () => {
 
 // Main Header Component
 const Header = () => {
-  const [isLoggedIn, setIsLoggedIn] = useState(true) // Replace with actual authentication logic
+  const isLoggedIn = true // Replace with actual authentication logic
 
   return (
     <>

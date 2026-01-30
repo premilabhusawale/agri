@@ -212,7 +212,7 @@ const ForFarmers = () => {
           </div>
           
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {benefits.map((benefit, index) => {
+            {benefits.map((benefit) => {
               const Icon = benefit.icon;
               return (
                 <div
@@ -296,7 +296,7 @@ const ForFarmers = () => {
           </div>
           
           <div className="grid md:grid-cols-3 gap-8">
-            {testimonials.map((testimonial, index) => (
+            {testimonials.map((testimonial) => (
               <div
                 key={testimonial.name}
                 className="bg-white p-6 rounded-2xl border border-gray-200"
@@ -337,7 +337,7 @@ const ForFarmers = () => {
             </div>
             
             <div className="space-y-4">
-              {faqs.map((faq, index) => (
+              {faqs.map((faq) => (
                 <div
                   key={faq.question}
                   className="bg-white border border-gray-200 rounded-xl p-6"

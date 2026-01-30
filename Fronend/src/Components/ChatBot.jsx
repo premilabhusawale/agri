@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect } from "react";
 
 const ChatBot = () => {
+  const messageIdRef = useRef(2); // start from 2 since initial message is 1
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState("");
@@ -55,7 +56,7 @@ const ChatBot = () => {
     if (!input.trim()) return;
 
     const userMessage = {
-      id: Date.now().toString(),
+      id: (messageIdRef.current++).toString(),
       content: input,
       sender: "user",
       timestamp: new Date(),
@@ -67,7 +68,7 @@ const ChatBot = () => {
     // Simulate bot typing
     setTimeout(() => {
       const botMessage = {
-        id: (Date.now() + 1).toString(),
+        id: (messageIdRef.current++).toString(),
         content: getBotResponse(input),
         sender: "bot",
         timestamp: new Date(),

@@ -7,9 +7,9 @@ const Accounts = () => {
   const [toast, setToast] = useState(null);
   
   // Mock user data for testing - replace this with real data later
-  const [user, setUser] = useState({
+  const user = {
     email: 'user@example.com'
-  });
+  };
   
   const [profile, setProfile] = useState({
     id: '1',

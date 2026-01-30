@@ -4,23 +4,17 @@ import { Leaf } from "lucide-react";
 const SplashScreen = ({ onComplete }) => {
   const [progress, setProgress] = useState(0);
   const [phase, setPhase] = useState("loading"); // loading, reveal, complete
-  const [mounted, setMounted] = useState(false);
-  const [particles, setParticles] = useState([]);
-
+  const [mounted] = useState(true);
+  const [particles] = useState([...Array(20)].map((_, i) => ({
+    id: i,
+    left: Math.random() * 100,
+    top: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    delay: Math.random() * 3,
+    duration: Math.random() * 10 + 15,
+  })));
+  
   useEffect(() => {
-    setMounted(true);
-    
-    // Generate random particles for extra visual interest
-    const newParticles = Array.from({ length: 20 }, (_, i) => ({
-      id: i,
-      left: Math.random() * 100,
-      top: Math.random() * 100,
-      size: Math.random() * 4 + 2,
-      delay: Math.random() * 3,
-      duration: Math.random() * 10 + 15,
-    }));
-    setParticles(newParticles);
-    
     // Smooth progress animation with easing
     const startTime = Date.now();
     const duration = 3000; // 3 seconds to complete

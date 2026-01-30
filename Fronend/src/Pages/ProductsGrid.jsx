@@ -26,11 +26,12 @@ const ProductsGrid = ({
   const [minRating, setMinRating] = useState(0);
 
   // Update search query when URL changes
+  // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => {
     if (urlSearchQuery) {
       setSearchQuery(urlSearchQuery);
     }
-  }, [urlSearchQuery]);
+  }, [urlSearchQuery]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const categories = [
     { id: "all", name: "All", emoji: "🌾" },
