@@ -14,7 +14,7 @@ import ProductDetails from "./Pages/ProductDetails";
 import Cart from "./Pages/Cart";
 import Wishlist from "./Pages/Wishlist";
 import Orders from "./Pages/Orders";
-import Accounts from "./Pages/Accounts";  
+import Accounts from "./Pages/Accounts";
 import Messages from "./Pages/Messages";
 import CheckOut from "./Pages/CheckOut";
 import FarmerDashboard from "./Pages/FarmerDashboard";
@@ -39,14 +39,15 @@ const AppContent = () => {
         <Route path="/Cart" element={<Cart />} />
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Orders" element={<Orders />} />
-        <Route path="/Accounts" element={<Accounts/>} />
+        <Route path="/Accounts" element={<Accounts />} />
         <Route path="/Messages" element={<Messages />} />
         <Route path="/CheckOut" element={<CheckOut />} />
         <Route path="/SpashScreen" element={<SplashScreen />} />
-        <Route path="/FarmerDashboard" element={<FarmerDashboard/>} />
+        <Route path="/FarmerDashboard" element={<FarmerDashboard />} />
       </Routes>
       {!hideLayout && <Footer />}
-      
+
+      {/* ChatBot will appear on all pages as a floating button */}
       <ChatBot />
     </>
   );

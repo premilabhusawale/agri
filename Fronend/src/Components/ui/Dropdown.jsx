@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt } from "react-icons/fa";
+import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
 
 const Dropdown = () => {
@@ -59,7 +59,7 @@ const Dropdown = () => {
             : "opacity-0 -translate-y-2 pointer-events-none"}
         `}
       >
-        <button 
+        <button
           onClick={() => handleNavigation("/Accounts")}
           className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
         >
@@ -67,7 +67,7 @@ const Dropdown = () => {
           Account
         </button>
 
-        <button 
+        <button
           onClick={() => handleNavigation("/Orders")}
           className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
         >
@@ -75,7 +75,7 @@ const Dropdown = () => {
           Orders
         </button>
 
-        <button 
+        <button
           onClick={() => handleNavigation("/Cart")}
           className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
         >
@@ -83,16 +83,15 @@ const Dropdown = () => {
           Cart
         </button>
 
-        <button 
+        <button
           onClick={() => handleNavigation("/Wishlist")}
           className="w-full px-4 py-3 flex items-center gap-3 text-sm text-gray-700 hover:bg-gray-100 transition-colors text-left"
         >
           <FaHeart className="text-gray-500" />
           Wishlist
         </button>
-
         <div className="border-t border-gray-200">
-          <button 
+          <button
             onClick={handleLogout}
             className="w-full px-4 py-3 flex items-center gap-3 text-sm text-red-600 hover:bg-red-50 transition-colors text-left"
           >
