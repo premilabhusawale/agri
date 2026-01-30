@@ -1,9 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import Header from "./Components/Header";
 import Footer from "./Components/Footer";
-import ChatBot from "./Components/ChatBot"; // Add this import
-
+import ChatBot from "./Components/ChatBot"; 
+import SplashScreen from "./Components/SpashScreen";
 import Home from "./Pages/Home";
 import LivePrices from "./Pages/LivePrices";
 import MarketPlace from "./Pages/MarketPlace";
@@ -16,6 +16,7 @@ import Wishlist from "./Pages/Wishlist";
 import Orders from "./Pages/Orders";
 import Accounts from "./Pages/Accounts";  
 import Messages from "./Pages/Messages";
+import CheckOut from "./Pages/CheckOut";
 import FarmerDashboard from "./Pages/FarmerDashboard";
 import LivePricesSection from "./HeroSection/LivePriceSection";
 
@@ -40,21 +41,27 @@ const AppContent = () => {
         <Route path="/Orders" element={<Orders />} />
         <Route path="/Accounts" element={<Accounts/>} />
         <Route path="/Messages" element={<Messages />} />
+        <Route path="/CheckOut" element={<CheckOut />} />
+        <Route path="/SpashScreen" element={<SplashScreen />} />
         <Route path="/FarmerDashboard" element={<FarmerDashboard/>} />
-        
       </Routes>
       {!hideLayout && <Footer />}
       
-      {/* ChatBot will appear on all pages as a floating button */}
       <ChatBot />
     </>
   );
 };
 
 const App = () => {
+  const [showSplash, setShowSplash] = useState(true);
+
   return (
     <Router>
-      <AppContent />
+      {showSplash ? (
+        <SplashScreen onComplete={() => setShowSplash(false)} />
+      ) : (
+        <AppContent />
+      )}
     </Router>
   );
 };

@@ -16,6 +16,16 @@ const slides = [
    
     
   },
+  {
+    image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&h=600&fit=crop",
+   
+    
+  },
+  {
+    image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=600&fit=crop",
+   
+    
+  },
   
 ];
 

@@ -3,8 +3,6 @@ import { Link, useNavigate } from 'react-router-dom'
 import { Leaf, User, Search, MessageSquare, ArrowRight, X, Users as UsersIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import products from '../Data/Products'
-
-// Import your existing Dropdown component
 import Dropdown from './ui/Dropdown'
 
 // TopBar Component
@@ -23,7 +21,7 @@ const TopBar = ({ isLoggedIn }) => {
           farmersMap.set(product.farmer, {
             name: product.farmer,
             location: product.location,
-            image: product.image, // Use product image as farmer avatar
+            image: product.image, 
             productCount: 1
           })
         } else {

@@ -10,7 +10,7 @@ const Footer = () => {
   };
 
   return (
-   <footer className="bg-[#133928]  text-white text-primary-foreground">
+   <footer className="bg-[#133928] text-white text-primary-foreground">
       
       {/* Newsletter Section */}
 <div className="border-b border-primary-foreground/10">
@@ -22,9 +22,20 @@ const Footer = () => {
       <h3 className="text-2xl font-bold mb-2">
         Stay Updated with Market Prices
       </h3>
-      <p className="text-primary-foreground/70">
+      <p className="text-primary-foreground/70 mb-6">
         Get daily price alerts and farming tips delivered to your inbox.
       </p>
+      {/* Added newsletter form */}
+      <form className="flex gap-3 max-w-md mx-auto">
+        <input
+          type="email"
+          placeholder="Enter your email"
+          className="flex-1 px-4 py-2 bg-white/10 border border-white/20 text-white placeholder:text-white/50 rounded"
+        />
+        <button className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded font-medium">
+          Subscribe
+        </button>
+      </form>
     </div>
   </div>
 </div>

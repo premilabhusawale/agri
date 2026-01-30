@@ -1,20 +1,23 @@
 import React, { useState, useEffect } from 'react'
-import { useParams, Link } from 'react-router-dom'
+import { useParams, Link, useNavigate } from 'react-router-dom'
 import products from '../Data/Products'
 import { Star, ShoppingCart, Zap, Heart, Share2, TrendingUp, Leaf, Award } from 'lucide-react'
 
 const ProductDetails = () => {
     const { id } = useParams();
+    const navigate = useNavigate();
     const [isLoaded, setIsLoaded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
+    const [quantity, setQuantity] = useState(1);
 
-    // Match product by string ID (your IDs are strings like "1", "2", etc.)
+    // Match product by string ID
     const product = products.find((item) => item.id === id);
 
     useEffect(() => {
         // Reset states when product ID changes
         setIsLoaded(false);
         setSelectedImage(0);
+        setQuantity(1);
         
         // Scroll to top when product changes
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -25,7 +28,7 @@ const ProductDetails = () => {
         }, 100);
 
         return () => clearTimeout(timer);
-    }, [id]); // Add id to dependency array
+    }, [id]);
 
     if (!product) {
         return (
@@ -49,7 +52,7 @@ const ProductDetails = () => {
 
     // Default values with fallbacks
     const rating = product.rating || 4.0;
-    const reviews = product.reviews || 0;
+    const reviews = product.reviews || 500;
     
     // Default rating breakdown
     const ratingBreakdown = product.ratingBreakdown || {
@@ -73,6 +76,81 @@ const ProductDetails = () => {
             );
         }
         return stars;
+    };
+
+    // Handle Add to Cart
+    const handleAddToCart = () => {
+        try {
+            // Get existing cart from localStorage
+            const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
+            
+            // Check if product already exists in cart
+            const existingItemIndex = existingCart.findIndex(item => item.id === product.id);
+            
+            if (existingItemIndex > -1) {
+                // Update quantity if product exists
+                existingCart[existingItemIndex].quantity += quantity;
+            } else {
+                // Add new product to cart
+                existingCart.push({
+                    id: product.id,
+                    name: product.name,
+                    price: discountedPrice,
+                    originalPrice: product.price,
+                    discount: product.discount,
+                    image: product.image,
+                    unit: product.unit || 'kg',
+                    quantity: quantity,
+                    farmer_id: product.farmer_id || 'f1'
+                });
+            }
+            
+            // Save updated cart to localStorage
+            localStorage.setItem('cart', JSON.stringify(existingCart));
+            
+            // Show success message
+            alert(`${product.name} added to cart!`);
+        } catch (error) {
+            console.error('Error adding to cart:', error);
+            alert('Failed to add item to cart. Please try again.');
+        }
+    };
+
+    // Handle Buy Now - FIXED VERSION
+    const handleBuyNow = () => {
+        try {
+            console.log('Buy Now button clicked');
+            
+            // Create a buy now item
+            const buyNowItem = [{
+                id: product.id,
+                name: product.name,
+                price: discountedPrice,
+                originalPrice: product.price,
+                discount: product.discount || 0,
+                image: product.image,
+                unit: product.unit || 'kg',
+                quantity: quantity,
+                farmer_id: product.farmer_id || 'f1'
+            }];
+            
+            console.log('Storing buyNowItem:', buyNowItem);
+            
+            // Store in localStorage for checkout page
+            localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
+            
+            // Verify it was stored
+            const stored = localStorage.getItem('buyNowItem');
+            console.log('Verification - Stored data:', stored);
+            
+            // Navigate to checkout page
+            console.log('Navigating to /CheckOut');
+            navigate('/CheckOut');
+            
+        } catch (error) {
+            console.error('Error in handleBuyNow:', error);
+            alert('Failed to process. Please try again.');
+        }
     };
 
     return (
@@ -121,13 +199,49 @@ const ProductDetails = () => {
                             ))}
                         </div>
 
+                        {/* Quantity Selector */}
+                        <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
+                            <label className="text-sm font-semibold text-gray-700 mb-2 block">Quantity</label>
+                            <div className="flex items-center gap-3">
+                                <button 
+                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors"
+                                >
+                                    −
+                                </button>
+                                <input 
+                                    type="number" 
+                                    value={quantity}
+                                    onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                                    className="w-20 h-10 text-center border border-gray-300 rounded-lg font-semibold focus:outline-none focus:border-green-500"
+                                    min="1"
+                                />
+                                <button 
+                                    onClick={() => setQuantity(quantity + 1)}
+                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors"
+                                >
+                                    +
+                                </button>
+                                <span className="text-sm text-gray-600 ml-2">{product.unit || 'kg'}</span>
+                            </div>
+                            <div className="mt-3 text-sm text-gray-600">
+                                Total: <span className="font-bold text-green-600 text-lg">₹{(discountedPrice * quantity).toFixed(2)}</span>
+                            </div>
+                        </div>
+
                         {/* Action Buttons */}
                         <div className="flex gap-3">
-                            <button className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105">
+                            <button 
+                                onClick={handleAddToCart}
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105"
+                            >
                                 <ShoppingCart className="w-5 h-5" />
                                 ADD TO CART
                             </button>
-                            <button className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105">
+                            <button 
+                                onClick={handleBuyNow}
+                                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105"
+                            >
                                 <Zap className="w-5 h-5" />
                                 BUY NOW
                             </button>
@@ -151,7 +265,7 @@ const ProductDetails = () => {
                                 <Star className="w-3 h-3 fill-white" />
                             </div>
                             <span className="text-gray-500 text-sm">
-                                {reviews > 0 ? reviews.toLocaleString() : '500'} Ratings & {reviews > 0 ? Math.floor(reviews * 0.3) : '150'} Reviews
+                                {reviews.toLocaleString()} Ratings & {Math.floor(reviews * 0.3)} Reviews
                             </span>
                             <span className="text-green-600 font-semibold text-sm flex items-center">
                                 <Award className="w-4 h-4 mr-1" />
@@ -161,7 +275,7 @@ const ProductDetails = () => {
 
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
                             {/* Price Section */}
-                          <div className="flex items-baseline gap-3 mb-2 flex-wrap">
+                            <div className="flex items-baseline gap-3 mb-2 flex-wrap">
                                 <span className="text-3xl font-semibold text-green-700">
                                     ₹{discountedPrice.toFixed(2)}
                                 </span>
@@ -338,7 +452,7 @@ const ProductDetails = () => {
                                         ))}
                                     </div>
                                     <div className="text-sm text-gray-500">
-                                        {reviews > 0 ? reviews.toLocaleString() : '500'} Ratings
+                                        {reviews.toLocaleString()} Ratings
                                     </div>
                                 </div>
                                 <div className="flex-1">
@@ -349,7 +463,7 @@ const ProductDetails = () => {
                                                 <div 
                                                     className="bg-green-600 h-2.5 rounded-full transition-all"
                                                     style={{ 
-                                                        width: `${(ratingBreakdown[stars] / (reviews || 500)) * 100}%` 
+                                                        width: `${(ratingBreakdown[stars] / reviews) * 100}%` 
                                                     }}
                                                 />
                                             </div>
