@@ -43,16 +43,12 @@ const SplashScreen = ({ onComplete }) => {
     return () => clearInterval(progressInterval);
   }, [onComplete]);
 
-  // Actual produce images from Unsplash (for popping sequence only)
+  // Reduced produce images - only 4 for clean crisscross
   const produceImages = [
-    { url: 'https://i.pinimg.com/1200x/1b/68/e6/1b68e67e68f729cd06180e53cb89814c.jpg', name: 'Tomatoes' },
-    { url: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=200&h=200&fit=crop', name: 'Carrots' },
-    { url: 'https://images.unsplash.com/photo-1551754655-cd27e38d2076?w=200&h=200&fit=crop', name: 'Corn' },
-    { url: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop', name: 'Apples' },
-    { url: 'https://i.pinimg.com/736x/34/ec/4b/34ec4b5bd89e459c2367013568a62455.jpg', name: 'Broccoli' },
-    { url: 'https://images.unsplash.com/photo-1563565375-f3fdfdbefa83?w=200&h=200&fit=crop', name: 'Peppers' },
-    { url: 'https://i.pinimg.com/736x/73/00/58/7300583abefe3faa11d9096b3b8acd30.jpg', name: 'Lettuce' },
-    { url: 'https://images.unsplash.com/photo-1615485290382-441e4d049cb5?w=200&h=200&fit=crop', name: 'Eggplant' },
+    { url: 'https://i.pinimg.com/1200x/1b/68/e6/1b68e67e68f729cd06180e53cb89814c.jpg', name: 'Tomatoes', direction: 'tl-br' },
+    { url: 'https://images.unsplash.com/photo-1598170845058-32b9d6a5da37?w=200&h=200&fit=crop', name: 'Carrots', direction: 'tr-bl' },
+    { url: 'https://i.pinimg.com/736x/34/ec/4b/34ec4b5bd89e459c2367013568a62455.jpg', name: 'Broccoli', direction: 'bl-tr' },
+    { url: 'https://images.unsplash.com/photo-1560806887-1e4cd0b6cbd6?w=200&h=200&fit=crop', name: 'Apples', direction: 'br-tl' },
   ];
 
   return (
@@ -85,17 +81,75 @@ const SplashScreen = ({ onComplete }) => {
           }
         }
         
-        @keyframes sprout-up {
+        /* Crisscross hop: Top-Left to Bottom-Right */
+        @keyframes hop-tl-br {
           0% { 
             opacity: 0; 
-            transform: translateY(40px) scale(0.5) rotate(-10deg);
+            transform: translate(-300px, -300px) scale(0.3) rotate(-180deg);
           }
-          70% { 
-            transform: translateY(-5px) scale(1.1) rotate(5deg);
+          50% { 
+            transform: translate(140px, 140px) scale(1.2) rotate(20deg);
+          }
+          75% {
+            transform: translate(125px, 125px) scale(0.95) rotate(-5deg);
           }
           100% { 
             opacity: 1; 
-            transform: translateY(0) scale(1) rotate(0deg);
+            transform: translate(130px, 130px) scale(1) rotate(0deg);
+          }
+        }
+        
+        /* Crisscross hop: Top-Right to Bottom-Left */
+        @keyframes hop-tr-bl {
+          0% { 
+            opacity: 0; 
+            transform: translate(300px, -300px) scale(0.3) rotate(180deg);
+          }
+          50% { 
+            transform: translate(-140px, 140px) scale(1.2) rotate(-20deg);
+          }
+          75% {
+            transform: translate(-125px, 125px) scale(0.95) rotate(5deg);
+          }
+          100% { 
+            opacity: 1; 
+            transform: translate(-130px, 130px) scale(1) rotate(0deg);
+          }
+        }
+        
+        /* Crisscross hop: Bottom-Left to Top-Right */
+        @keyframes hop-bl-tr {
+          0% { 
+            opacity: 0; 
+            transform: translate(-300px, 300px) scale(0.3) rotate(180deg);
+          }
+          50% { 
+            transform: translate(140px, -140px) scale(1.2) rotate(20deg);
+          }
+          75% {
+            transform: translate(125px, -125px) scale(0.95) rotate(-5deg);
+          }
+          100% { 
+            opacity: 1; 
+            transform: translate(130px, -130px) scale(1) rotate(0deg);
+          }
+        }
+        
+        /* Crisscross hop: Bottom-Right to Top-Left */
+        @keyframes hop-br-tl {
+          0% { 
+            opacity: 0; 
+            transform: translate(300px, 300px) scale(0.3) rotate(-180deg);
+          }
+          50% { 
+            transform: translate(-140px, -140px) scale(1.2) rotate(-20deg);
+          }
+          75% {
+            transform: translate(-125px, -125px) scale(0.95) rotate(5deg);
+          }
+          100% { 
+            opacity: 1; 
+            transform: translate(-130px, -130px) scale(1) rotate(0deg);
           }
         }
         
@@ -303,8 +357,6 @@ const SplashScreen = ({ onComplete }) => {
             { emoji: '🍎', left: '85%', top: '78%', delay: 3.3, size: 1 },
             { emoji: '🥬', left: '18%', top: '42%', delay: 1.7, size: 0.95 },
             { emoji: '🫑', left: '78%', top: '48%', delay: 2.8, size: 1.05 },
-            { emoji: '🥦', left: '5%', top: '88%', delay: 3.5, size: 0.85 },
-            { emoji: '🍆', left: '92%', top: '8%', delay: 0.8, size: 0.9 },
           ].map((item, i) => (
             <div
               key={i}
@@ -336,7 +388,7 @@ const SplashScreen = ({ onComplete }) => {
             padding: "20px",
           }}
         >
-          {/* Logo Section - Sequential produce reveal then logo */}
+          {/* Logo Section - TRUE Crisscross hopping */}
           <div
             style={{
               position: "relative",
@@ -348,36 +400,27 @@ const SplashScreen = ({ onComplete }) => {
               justifyContent: "center",
             }}
           >
-            {/* Produce images appear first in sequence, then vanish when logo appears */}
+            {/* 4 Produce images hop in CRISSCROSS pattern */}
             {produceImages.map((produce, index) => {
-              const positions = [
-                { top: "0px", left: "0px" },
-                { top: "0px", right: "0px" },
-                { bottom: "0px", left: "0px" },
-                { bottom: "0px", right: "0px" },
-                { top: "50%", left: "0px", transform: "translateY(-50%)" },
-                { top: "50%", right: "0px", transform: "translateY(-50%)" },
-                { top: "20px", left: "50%", transform: "translateX(-50%)" },
-                { bottom: "20px", left: "50%", transform: "translateX(-50%)" },
-              ];
-              
-              const threshold = 10 + (index * 10);
-              const shouldShow = progress > threshold && progress < 90;
+              const threshold = 20 + (index * 15);
+              const shouldShow = progress > threshold && progress < 85;
               
               if (!shouldShow) return null;
+              
+              // Get the animation based on direction
+              const animationName = `hop-${produce.direction}`;
               
               return (
                 <div
                   key={index}
                   style={{
                     position: "absolute",
-                    width: "70px",
-                    height: "70px",
-                    ...positions[index],
-                    animation: progress > 85 
-                      ? "fade-out-scale 0.4s ease-out forwards" 
-                      : "sprout-up 0.6s cubic-bezier(0.34, 1.56, 0.64, 1)",
-                    filter: "drop-shadow(0 8px 16px rgba(0, 0, 0, 0.4))",
+                    width: "80px",
+                    height: "80px",
+                    animation: progress > 80 
+                      ? "fade-out-scale 0.5s ease-out forwards" 
+                      : `${animationName} 0.9s cubic-bezier(0.34, 1.56, 0.64, 1)`,
+                    filter: "drop-shadow(0 10px 20px rgba(0, 0, 0, 0.5))",
                     zIndex: 2,
                   }}
                 >
@@ -390,8 +433,8 @@ const SplashScreen = ({ onComplete }) => {
               );
             })}
 
-            {/* Logo appears last after vegetables vanish */}
-            {progress > 90 && (
+            {/* Logo appears with BOOM after crisscross */}
+            {progress > 85 && (
               <div
                 style={{
                   position: "relative",
