@@ -4,7 +4,6 @@ const CartService = require("../services/CartService.js");
 const OrderItem = require("../models/OrderItem.js");
 const { sendEmail } = require("../config/email.js");
 const orderEmailTemplate = require('../utils/emailTemplate.js');
-const { generateProductSku } = require('../utils/generateSku.js');
 
 // CLACULATE PRODUCT DISCOUNT
 const calculateDiscountPercent = (price, discountedPrice) => {
@@ -55,12 +54,9 @@ const createOrder = async (user, shippingAddress) => {
 
 
   for (const item of items) {
-    const skuFallback =
-      item.skuCode || item.product?.productSku || generateProductSku(item.product?.title || 'PROD', item.product?.brand || 'BR');
-
     const orderItem = await OrderItem.create({
       product: item.product._id,
-      skuCode: skuFallback,
+     skuCode: item.product.productSku,
       quantity: item.quantity,
       price: item.price,
       discountedPrice: item.discountedPrice,
