@@ -2,7 +2,6 @@
 const mongoose = require('mongoose');
 
 
-
 const userSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -26,7 +25,7 @@ const userSchema = new mongoose.Schema({
     },
     role:{
         type:String,
-        enum:['CUSTOMER','ADMIN'],
+        enum:['CUSTOMER','ADMIN','FARMER'],
         default:"CUSTOMER"
     },
     photo:{
@@ -49,6 +48,21 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpires:{
         type:Date,
     },
+     wishlist: [
+    {
+      productId: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "products", 
+        required: true,
+      },
+      addedAt: {
+        type: Date,
+        default: Date.now,
+      },
+    },
+  ],
+    ratings: [{ type: mongoose.Schema.Types.ObjectId, ref: "ratings" }],
+    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "reviews" }],
 })
 
 

@@ -65,7 +65,7 @@ const getAllUsers = async () => {
 
 const findUserById = async (userId) => {
     try {
-        const user = await User.findById(userId);
+        const user = await User.findById(userId).populate('wishlist.productId').populate('ratings').populate('reviews');
         return user;
 
     } catch (error) {

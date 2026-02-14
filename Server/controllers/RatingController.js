@@ -1,10 +1,9 @@
-import RatingService from "../services/RatingService.js";
+const RatingService = require ("../Services/RatingService");
 
 // CREATE
 
 const createRating = async (req, res) => {
   try {
-    // ✅ IMPORTANT
     const rating = await RatingService.createRating(req.body, req.user);
 
     res.status(201).json({
@@ -45,18 +44,7 @@ const updateRating = async (req, res) => {
   }
 };
 
-// DELETE
- const deleteRating = async (req, res) => {
-  try {
-    const result = await RatingService.deleteRating(
-      req.params.ratingId,
-      req.user._id
-    );
-    res.status(200).json({ success: true, data: result });
-  } catch (err) {
-    res.status(400).json({ success: false, message: err.message });
-  }
-};
 
 
-export default {createRating,getAllRatings,deleteRating,updateRating}
+
+module.exports = {createRating,getAllRatings,updateRating}

@@ -1,35 +1,47 @@
 const express = require('express');
-const app  = express();
+const app = express();
 const cors = require('cors');
 
- app.use(express.json());
- app.use(cors());
+app.use(express.json());
+app.use(cors());
 
-// Authentication Routes Api
-const Auth_Route = require('./routes/AuthRoutes')
+// Authentication Routes
+const Auth_Route = require('./routes/AuthRoutes');
 app.use('/api/v1/auth', Auth_Route);
 
-// User Routes Api
-const User_Route = require('./routes/UserRoutes')
+// User Routes
+const User_Route = require('./routes/UserRoutes');
 app.use('/api/v1/user', User_Route);
 
-// Product Routes Api
-const Product_Route = require('./routes/ProductRoutes')
+// Product Routes
+const Product_Route = require('./routes/ProductRoutes');
 app.use('/api/v1/product', Product_Route);
 
-// Cart Routes Api
-const Cart_Route = require('./routes/CartRoutes')
+// Cart Routes
+const Cart_Route = require('./routes/CartRoutes');
 app.use('/api/v1/cart', Cart_Route);
 
-// Ensure Ratings and Reviews models are registered
-require('./models/Ratings');
-require('./models/Reviews');
+// Rating Routes
+const Rating = require('./routes/RatingRoutes');
+app.use('/api/rating', Rating);
 
-// Orders Routing 
+// Order Routes
 const Orders = require('./routes/OrderRoutes');
 app.use('/api/v1/orders', Orders);
 
-const PaymentRoutes = require (("./routes/PaymentRoutes.js"));
-app.use("/api/payment", PaymentRoutes);
+const WishlistRoute = require('./routes/WishlistRoutes.js')
+app.use('/api/agro', WishlistRoute);
 
- module.exports = app;
+
+const ReviewRoute = require('./routes/ReviewRoutes.js')
+app.use('/api/review', ReviewRoute);
+
+// Payment Routes
+const PaymentRoutes = require('./routes/PaymentRoutes');
+app.use('/api/payment', PaymentRoutes);
+
+const ChatRoutes = require('./routes/CartRoutes.js');
+app.use('/api/agro', ChatRoutes);
+
+
+module.exports = app;
