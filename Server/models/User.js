@@ -19,52 +19,58 @@ const userSchema = new mongoose.Schema({
         type: String,
         required: [true, "Enter Your Email"]
     },
-     password: {
+    password: {
         type: String,
         required: [true, "Enter Your Password"]
     },
-    role:{
-        type:String,
-        enum:['CUSTOMER','ADMIN','FARMER'],
-        default:"CUSTOMER"
+    role: {
+        type: String,
+        enum: ['CUSTOMER', 'ADMIN', 'FARMER'],
+        default: "CUSTOMER"
     },
-    photo:{
-        type:String,
+    photo: {
+        type: String,
     },
-       resetPasswordToken: {
-    type: String
-  },
-  resetPasswordExpires: {
-    type: Date
-  },
-  
-    createdAt:{
-        type:Date,
-        default:Date.now()
+    resetPasswordToken: {
+        type: String
     },
-    resetPasswordToken:{
-        type:String,
-    },  
-    resetPasswordExpires:{
-        type:Date,
+    resetPasswordExpires: {
+        type: Date
     },
-     wishlist: [
-    {
-      productId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "products", 
-        required: true,
-      },
-      addedAt: {
+
+    createdAt: {
         type: Date,
-        default: Date.now,
-      },
+        default: Date.now()
     },
-  ],
+    resetPasswordToken: {
+        type: String,
+    },
+    resetPasswordExpires: {
+        type: Date,
+    },
+    wishlist: [
+        {
+            productId: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "products",
+                required: true,
+            },
+            addedAt: {
+                type: Date,
+                default: Date.now,
+            },
+        },
+    ],
     ratings: [{ type: mongoose.Schema.Types.ObjectId, ref: "ratings" }],
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "reviews" }],
+
+    language: {
+        type: String,
+        enum: ['en', 'hi', 'mr'],
+        default: 'en'
+    }
 })
 
 
-const User = mongoose.model('users',userSchema);
+const User = mongoose.model('users', userSchema);
 module.exports = User

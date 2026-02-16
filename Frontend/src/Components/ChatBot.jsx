@@ -1,10 +1,11 @@
 import { useState, useRef, useEffect } from "react";
 
 const ChatBot = () => {
-  const messageIdRef = useRef(2); // start from 2 since initial message is 1
+  const messageIdRef = useRef(2);
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
   const [input, setInput] = useState("");
+  const [isTyping, setIsTyping] = useState(false);
   const [messages, setMessages] = useState([
     {
       id: "1",
@@ -30,29 +31,55 @@ const ChatBot = () => {
     "Payment methods available",
   ];
 
-  const getBotResponse = (userMessage) => {
-    const lowerMessage = userMessage.toLowerCase();
+  /* ─── Fake responses based on keywords ─────────────────── */
+  const getFakeResponse = (message) => {
+    const msg = message.toLowerCase();
 
-    if (lowerMessage.includes("price") || lowerMessage.includes("cost")) {
-      return "Current market prices:\n🍅 Tomatoes: ₹45/kg (+5.2%)\n🥔 Potatoes: ₹28/kg (-2.1%)\n🧅 Onions: ₹35/kg (+8.5%)\n\nCheck our Live Prices section for real-time updates!";
-    }
-    if (lowerMessage.includes("list") || lowerMessage.includes("sell")) {
-      return "To list your produce:\n1. Create a farmer account\n2. Go to 'My Listings'\n3. Click 'Add New Product'\n4. Upload photos and set price\n5. Publish!\n\nWant me to guide you through registration?";
-    }
-    if (lowerMessage.includes("organic") || lowerMessage.includes("farm")) {
-      return "We have 500+ verified organic farms! You can filter by:\n• Location (use your GPS)\n• Certification type\n• Produce category\n\nVisit our Marketplace and select 'Organic' filter! 🌿";
-    }
-    if (lowerMessage.includes("payment")) {
-      return "We support multiple payment methods:\n💳 UPI (GPay, PhonePe, Paytm)\n💰 Net Banking\n🏦 Cash on Delivery\n📱 Wallet Balance\n\nAll payments are secure and instant!";
-    }
-    if (lowerMessage.includes("hello") || lowerMessage.includes("hi")) {
-      return "Hello! Great to see you here. I can help you with:\n• Current crop prices\n• Finding products\n• Selling your produce\n• Delivery tracking\n\nWhat would you like to know?";
-    }
+    if (msg.includes("tomato"))
+      return "🍅 Current tomato prices:\n• Nashik Market: ₹28/kg\n• Pune APMC: ₹30/kg\n• Aurangabad: ₹25/kg\n\nPrices vary daily based on supply. Check the Live Prices section for real-time data!";
 
-    return "I'm here to help! You can ask me about:\n• Current market prices 📊\n• How to sell your produce 🌾\n• Finding organic products 🌿\n• Payment & delivery info 📦\n\nWhat would you like to know?";
+    if (msg.includes("onion"))
+      return "🧅 Onion prices today:\n• Lasalgaon APMC: ₹18/kg\n• Nashik: ₹20/kg\n• Solapur: ₹16/kg\n\nLasalgaon is Asia's largest onion market — always a good benchmark!";
+
+    if (msg.includes("potato"))
+      return "🥔 Potato prices:\n• Pune Market: ₹22/kg\n• Nagpur APMC: ₹20/kg\n• Mumbai: ₹24/kg\n\nPotato prices are stable this week.";
+
+    if (msg.includes("price") || msg.includes("rate") || msg.includes("mandi"))
+      return "📊 You can check live crop prices in the Live Prices section above!\n\nI have data for:\n• Tomatoes 🍅\n• Onions 🧅\n• Potatoes 🥔\n• Garlic 🧄\n• And 10+ more crops\n\nWhich crop are you interested in?";
+
+    if (msg.includes("list") || msg.includes("sell") || msg.includes("produce"))
+      return "📋 To list your produce:\n1. Go to your Dashboard\n2. Click 'Add Listing'\n3. Enter crop name, quantity & price\n4. Upload a photo (optional)\n5. Hit 'Publish'\n\nYour listing goes live instantly and buyers in your area can see it! 🚀";
+
+    if (msg.includes("organic"))
+      return "🌿 Finding organic farms near you:\n\nThere are 12 certified organic farms within 50km of Nanded.\n\n• Patil Organic Farm – Latur (32km)\n• Green Earth Farms – Osmanabad (41km)\n• Nashik Organics – Nashik (120km)\n\nWant me to show more details for any of these?";
+
+    if (msg.includes("payment") || msg.includes("pay"))
+      return "💳 Payment methods available:\n\n• UPI (GPay, PhonePe, Paytm) ✅\n• Bank Transfer (NEFT/IMPS) ✅\n• Cash on Delivery ✅\n• Crop loan settlement ✅\n\nAll transactions are secured and you get instant payment confirmation. 🔒";
+
+    if (msg.includes("weather") || msg.includes("rain") || msg.includes("forecast"))
+      return "⛅ Today's farming weather for Maharashtra:\n\n• Temperature: 28–34°C\n• Humidity: 52%\n• Wind: 12 km/h NW\n• Rain chance: 10%\n\nGood conditions for harvesting this week! Best to water crops in the early morning. 🌱";
+
+    if (msg.includes("fertilizer") || msg.includes("pesticide") || msg.includes("spray"))
+      return "🌾 Crop care tips:\n\n• Use NPK 19-19-19 for general growth\n• Neem oil spray works well for most pests\n• Best spray time: early morning or after sunset\n• Avoid spraying before rain\n\nAlways follow the dosage on the label. Need advice for a specific crop?";
+
+    if (msg.includes("loan") || msg.includes("kcc") || msg.includes("credit"))
+      return "🏦 Farmer loan options:\n\n• Kisan Credit Card (KCC) – up to ₹3 lakh @ 4%\n• PM Kisan Scheme – ₹6,000/year direct benefit\n• State Bank Agri Loan – flexible repayment\n\nVisit your nearest bank branch with Aadhaar + land documents. 📄";
+
+    if (msg.includes("hello") || msg.includes("hi") || msg.includes("hey") || msg.includes("namaste"))
+      return "Namaste! 🙏 Great to see you!\n\nI can help you with:\n• 📊 Crop prices\n• 🌿 Farming tips\n• 💳 Payments & loans\n• 🛒 Listing your produce\n\nWhat would you like to know?";
+
+    if (msg.includes("thank"))
+      return "You're welcome! Happy farming! 🌾\n\nFeel free to ask anything else. I'm here 24/7 to help you get the best from your farm! 🙏";
+
+    if (msg.includes("help"))
+      return "Sure! Here's what I can help with:\n\n🔹 Crop prices (tomato, onion, potato...)\n🔹 How to list & sell your produce\n🔹 Organic farms nearby\n🔹 Payment methods\n🔹 Weather updates\n🔹 Fertilizer & pesticide tips\n🔹 Farmer loans & schemes\n\nJust ask away! 😊";
+
+    // Default fallback
+    return "Thanks for your question! 🌱\n\nI'm still learning, but I can help with:\n• Crop prices\n• Selling your produce\n• Farming tips\n• Loans & schemes\n\nCould you rephrase or try one of the quick questions below?";
   };
 
-  const handleSend = () => {
+  /* ─── Send handler ───────────────────────────────────────── */
+  const handleSend = async () => {
     if (!input.trim()) return;
 
     const userMessage = {
@@ -63,18 +90,23 @@ const ChatBot = () => {
     };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = input;
     setInput("");
+    setIsTyping(true);
 
-    // Simulate bot typing
-    setTimeout(() => {
-      const botMessage = {
-        id: (messageIdRef.current++).toString(),
-        content: getBotResponse(input),
-        sender: "bot",
-        timestamp: new Date(),
-      };
-      setMessages((prev) => [...prev, botMessage]);
-    }, 800);
+    // Simulate network delay (600ms – 1.2s)
+    await new Promise((res) => setTimeout(res, 600 + Math.random() * 600));
+
+    const botResponse = getFakeResponse(currentInput);
+    setIsTyping(false);
+
+    const botMessage = {
+      id: (messageIdRef.current++).toString(),
+      content: botResponse,
+      sender: "bot",
+      timestamp: new Date(),
+    };
+    setMessages((prev) => [...prev, botMessage]);
   };
 
   const handleQuickReply = (reply) => {
@@ -101,11 +133,8 @@ const ChatBot = () => {
 
       {/* Chat Window */}
       {isOpen && (
-        <div
-          className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${
-            isMinimized
-              ? "bottom-6 right-6 w-72 h-16"
-              : "bottom-6 right-6 w-[380px] h-[600px] max-h-[80vh]"
+        <div className={`fixed z-50 bg-white rounded-2xl shadow-2xl overflow-hidden flex flex-col transition-all duration-300 ${
+            isMinimized ? "bottom-6 right-6 w-72 h-16" : "bottom-6 right-6 w-[380px] h-[600px] max-h-[80vh]"
           }`}
         >
           {/* Header */}
@@ -119,15 +148,14 @@ const ChatBot = () => {
               {!isMinimized && (
                 <div>
                   <h3 className="font-semibold text-white">AgriBot</h3>
-                  <p className="text-xs text-white/70">Always here to help</p>
+                  <p className="text-xs text-white/70">
+                    {isTyping ? "Typing..." : "Always here to help"}
+                  </p>
                 </div>
               )}
             </div>
             <div className="flex items-center gap-1">
-              <button
-                className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
-                onClick={() => setIsMinimized(!isMinimized)}
-              >
+              <button className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors" onClick={() => setIsMinimized(!isMinimized)}>
                 {isMinimized ? (
                   <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4" />
@@ -138,10 +166,7 @@ const ChatBot = () => {
                   </svg>
                 )}
               </button>
-              <button
-                className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors"
-                onClick={() => setIsOpen(false)}
-              >
+              <button className="p-2 text-white hover:bg-white/20 rounded-lg transition-colors" onClick={() => setIsOpen(false)}>
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
                 </svg>
@@ -154,19 +179,8 @@ const ChatBot = () => {
               {/* Messages */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4 bg-gray-50">
                 {messages.map((message) => (
-                  <div
-                    key={message.id}
-                    className={`flex gap-3 ${
-                      message.sender === "user" ? "flex-row-reverse" : ""
-                    }`}
-                  >
-                    <div
-                      className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${
-                        message.sender === "bot"
-                          ? "bg-green-100"
-                          : "bg-orange-100"
-                      }`}
-                    >
+                  <div key={message.id} className={`flex gap-3 ${message.sender === "user" ? "flex-row-reverse" : ""}`}>
+                    <div className={`w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center ${message.sender === "bot" ? "bg-green-100" : "bg-orange-100"}`}>
                       {message.sender === "bot" ? (
                         <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
@@ -177,23 +191,31 @@ const ChatBot = () => {
                         </svg>
                       )}
                     </div>
-                    <div
-                      className={`max-w-[75%] p-3 rounded-2xl ${
-                        message.sender === "bot"
-                          ? "bg-white text-gray-800 rounded-tl-none shadow-sm"
-                          : "bg-green-600 text-white rounded-tr-none"
-                      }`}
-                    >
+                    <div className={`max-w-[75%] p-3 rounded-2xl ${message.sender === "bot" ? "bg-white text-gray-800 rounded-tl-none shadow-sm" : "bg-green-600 text-white rounded-tr-none"}`}>
                       <p className="text-sm whitespace-pre-line">{message.content}</p>
                       <span className="text-xs opacity-60 mt-1 block">
-                        {message.timestamp.toLocaleTimeString([], {
-                          hour: "2-digit",
-                          minute: "2-digit",
-                        })}
+                        {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                       </span>
                     </div>
                   </div>
                 ))}
+
+                {/* Typing Indicator */}
+                {isTyping && (
+                  <div className="flex gap-3">
+                    <div className="w-8 h-8 rounded-full bg-green-100 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                      </svg>
+                    </div>
+                    <div className="bg-white p-3 rounded-2xl rounded-tl-none shadow-sm flex items-center gap-1">
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "0ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "150ms" }}></span>
+                      <span className="w-2 h-2 bg-gray-400 rounded-full animate-bounce" style={{ animationDelay: "300ms" }}></span>
+                    </div>
+                  </div>
+                )}
+
                 <div ref={messagesEndRef} />
               </div>
 
@@ -203,11 +225,8 @@ const ChatBot = () => {
                   <p className="text-xs text-gray-500 mb-2">Quick questions:</p>
                   <div className="flex flex-wrap gap-2">
                     {quickReplies.map((reply, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleQuickReply(reply)}
-                        className="px-3 py-1.5 text-xs bg-white hover:bg-gray-100 rounded-full text-gray-700 transition-colors shadow-sm"
-                      >
+                      <button key={index} onClick={() => handleQuickReply(reply)}
+                        className="px-3 py-1.5 text-xs bg-white hover:bg-gray-100 rounded-full text-gray-700 transition-colors shadow-sm">
                         {reply}
                       </button>
                     ))}
@@ -217,24 +236,17 @@ const ChatBot = () => {
 
               {/* Input */}
               <div className="p-4 border-t border-gray-200 bg-white">
-                <form
-                  onSubmit={(e) => {
-                    e.preventDefault();
-                    handleSend();
-                  }}
-                  className="flex gap-2"
-                >
+                <form onSubmit={(e) => { e.preventDefault(); handleSend(); }} className="flex gap-2">
                   <input
                     type="text"
                     placeholder="Type your message..."
                     value={input}
                     onChange={(e) => setInput(e.target.value)}
-                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500"
+                    disabled={isTyping}
+                    className="flex-1 px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50"
                   />
-                  <button 
-                    type="submit" 
-                    className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors"
-                  >
+                  <button type="submit" disabled={isTyping}
+                    className="bg-green-600 hover:bg-green-700 text-white p-2 rounded-lg transition-colors disabled:opacity-50">
                     <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
                     </svg>

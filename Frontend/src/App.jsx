@@ -19,6 +19,7 @@ import Messages from "./Pages/Messages";
 import CheckOut from "./Pages/CheckOut";
 import FarmerDashboard from "./Pages/FarmerDashboard";
 import LivePricesSection from "./HeroSection/LivePriceSection";
+import ForgotPassword from "./Pages/Forgotpassword";
 
 const AppContent = () => {
   const location = useLocation();
@@ -40,6 +41,7 @@ const AppContent = () => {
         <Route path="/Wishlist" element={<Wishlist />} />
         <Route path="/Orders" element={<Orders />} />
         <Route path="/Accounts" element={<Accounts />} />
+        <Route path="/ForgotPassword" element={<ForgotPassword />} />
         <Route path="/Messages" element={<Messages />} />
         <Route path="/CheckOut" element={<CheckOut />} />
         <Route path="/SpashScreen" element={<SplashScreen />} />

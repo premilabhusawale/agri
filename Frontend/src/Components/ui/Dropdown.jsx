@@ -1,12 +1,27 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt, FaShoppingCart } from "react-icons/fa";
+import { FaUser, FaShoppingBag, FaHeart, FaSignOutAlt } from "react-icons/fa";
 import { MdShoppingCart } from "react-icons/md";
 
 const Dropdown = () => {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const dropdownRef = useRef(null);
   const navigate = useNavigate();
+
+  // ✅ Get user data from localStorage
+  useEffect(() => {
+    const userStr = localStorage.getItem('user');
+    if (userStr) {
+      try {
+        const userData = JSON.parse(userStr);
+        setUser(userData);
+        console.log('Dropdown - User loaded:', userData);
+      } catch (error) {
+        console.error('Error parsing user data:', error);
+      }
+    }
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -26,11 +41,42 @@ const Dropdown = () => {
   };
 
   const handleLogout = () => {
-    // Add your logout logic here (clear tokens, user data, etc.)
-    console.log("Logging out...");
-    // Example: localStorage.removeItem('token');
-    navigate("/login");
+    // ✅ FIXED: Clear localStorage properly
+    localStorage.removeItem('jwt');
+    localStorage.removeItem('user');
+    
+    console.log('✅ Logged out successfully');
+    console.log('localStorage cleared:', {
+      jwt: localStorage.getItem('jwt'),
+      user: localStorage.getItem('user')
+    });
+    
+    // Dispatch custom event to update Header
+    window.dispatchEvent(new Event('userLoggedIn'));
+    
+    // Navigate to home or auth page
+    navigate('/');
+    
+    // Reload page to reset all state
+    setTimeout(() => {
+      window.location.reload();
+    }, 100);
+    
     setOpen(false);
+  };
+
+  // ✅ Get user display name
+  const getUserName = () => {
+    if (!user) return 'User';
+    return user.name || user.full_name || user.email?.split('@')[0] || 'User';
+  };
+
+  // ✅ Get user photo
+  const getUserPhoto = () => {
+    if (user?.photo) return user.photo;
+    if (user?.avatar_url) return user.avatar_url;
+    // Default avatar
+    return "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNu9uulWIgqP6ax8ikiM4eQUf2cNqGtOMkaQ&s";
   };
 
   return (
@@ -40,13 +86,17 @@ const Dropdown = () => {
         className="px-4 flex items-center gap-4 py-2 rounded-lg bg-white/30 text-white hover:bg-white/40 transition-colors"
       >
         <img
-          src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSNu9uulWIgqP6ax8ikiM4eQUf2cNqGtOMkaQ&s"
+          src={getUserPhoto()}
           alt="User profile"
           className="w-10 h-10 bg-amber-600 rounded-full object-cover"
+          onError={(e) => {
+            // Fallback if image fails to load
+            e.target.src = "https://ui-avatars.com/api/?name=" + getUserName() + "&background=F59E0B&color=fff";
+          }}
         />
         <div className="text-left">
           <p className="text-xs opacity-90">Welcome</p>
-          <p className="text-sm font-semibold">User Name</p>
+          <p className="text-sm font-semibold">{getUserName()}</p>
         </div>
       </button>
 
@@ -90,6 +140,7 @@ const Dropdown = () => {
           <FaHeart className="text-gray-500" />
           Wishlist
         </button>
+        
         <div className="border-t border-gray-200">
           <button
             onClick={handleLogout}

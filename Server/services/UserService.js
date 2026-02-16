@@ -5,23 +5,19 @@ const crypto = require('crypto');
 
 const createUser = async (userData) => {
     try {
-        let { name, surname, email, password, photo, mobile, role } = userData;
+        let { name, surname, email, password, photo, mobile, role, language } = userData; // ✅ added language
 
-        // Validate role
-        if (role && !['CUSTOMER', 'ADMIN'].includes(role)) {
+        if (role && !['CUSTOMER', 'ADMIN', 'FARMER'].includes(role)) {
             throw new Error('Invalid role');
         }
 
         role = role || 'CUSTOMER';
 
-        // Check if email exists
         const isExists = await User.findOne({ email });
-
         if (isExists) {
             throw new Error('Email already exists');
         }
 
-        // Hash password
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
@@ -31,7 +27,8 @@ const createUser = async (userData) => {
             password: hashedPassword,
             photo,
             mobile,
-            role
+            role,
+            language: language || 'en' // ✅ added language
         });
 
         return user;
@@ -51,25 +48,23 @@ const findUserByEmail = async (email) => {
     }
 };
 
-
 const getAllUsers = async () => {
     try {
-
         const users = await User.find();
-        return users
-
+        return users;
     } catch (error) {
-        throw new Error(error.message)
+        throw new Error(error.message);
     }
-}
+};
 
 const findUserById = async (userId) => {
     try {
-        const user = await User.findById(userId).populate('wishlist.productId').populate('ratings').populate('reviews');
+        const user = await User.findById(userId)
+            .populate('wishlist.productId')
+            .populate('ratings')
+            .populate('reviews');
         return user;
-
     } catch (error) {
-
         throw new Error(error.message);
     }
 };
@@ -84,16 +79,14 @@ const getUserProfile = async (token) => {
         }
 
         return user;
-
     } catch (error) {
         throw new Error('Invalid Token or User Not Found');
     }
 };
 
 const updateUserProfile = async (userId, updateData) => {
-
     try {
-        const allowedFields = ['name', 'surname', 'mobile', 'photo', 'email','role'];
+        const allowedFields = ['name', 'surname', 'mobile', 'photo', 'email', 'role', 'language']; // ✅ added language
         const updates = {};
 
         for (const key of allowedFields) {
@@ -124,7 +117,6 @@ const logoutUser = async () => {
     }
 };
 
-
 const generateResetToken = () => crypto.randomBytes(20).toString('hex');
 
 const setResetPasswordToken = async (email) => {
@@ -139,14 +131,12 @@ const setResetPasswordToken = async (email) => {
 };
 
 const resetPassword = async (token, newPassword, confirmPassword) => {
-    const user = await User.findOne(
-        {
-            resetPasswordToken: token,
-            resetPasswordExpires: { $gt: Date.now() }
-        }
-    );
-    if (!user) throw new Error("Invalid or expired token");
+    const user = await User.findOne({
+        resetPasswordToken: token,
+        resetPasswordExpires: { $gt: Date.now() }
+    });
 
+    if (!user) throw new Error("Invalid or expired token");
     if (newPassword !== confirmPassword) throw new Error("Passwords do not match");
 
     const passwordRegex = /^(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*])[A-Za-z\d!@#$%^&*]{8,}$/;
@@ -160,11 +150,14 @@ const resetPassword = async (token, newPassword, confirmPassword) => {
     return user;
 };
 
-
-
-
-
-module.exports = { setResetPasswordToken, resetPassword, createUser, getAllUsers, findUserByEmail, findUserById, logoutUser, getUserProfile, updateUserProfile };
-
-
-
+module.exports = {
+    setResetPasswordToken,
+    resetPassword,
+    createUser,
+    getAllUsers,
+    findUserByEmail,
+    findUserById,
+    logoutUser,
+    getUserProfile,
+    updateUserProfile
+};

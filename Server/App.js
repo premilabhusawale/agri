@@ -36,12 +36,18 @@ app.use('/api/agro', WishlistRoute);
 const ReviewRoute = require('./routes/ReviewRoutes.js')
 app.use('/api/review', ReviewRoute);
 
+// Price / Market Routes
+const Price_Route = require('./routes/PriceRoutes');
+app.use('/api/v1/prices', Price_Route);
 // Payment Routes
 const PaymentRoutes = require('./routes/PaymentRoutes');
 app.use('/api/payment', PaymentRoutes);
 
-const ChatRoutes = require('./routes/CartRoutes.js');
+const ChatRoutes = require('./routes/chatRoutes.js');
 app.use('/api/agro', ChatRoutes);
+
+const chatbotRoutes = require('./routes/ChatbotRoutes'); 
+app.use('/api/chatbot', chatbotRoutes);  
 
 
 module.exports = app;

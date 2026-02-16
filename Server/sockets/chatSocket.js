@@ -15,30 +15,46 @@ const chatSocket = (io) => {
 
     // Send Message
     socket.on("sendMessage", async (data) => {
-      const { sender, receiver, message } = data;
+      try {
+        const { sender, receiver, message } = data;
 
-      const senderUser = await User.findById(sender);
-      const receiverUser = await User.findById(receiver);
+        const senderUser = await User.findById(sender);
+        const receiverUser = await User.findById(receiver);
 
-      // Allow only CUSTOMER <-> FARMER
-      const valid =
-        (senderUser.role === "CUSTOMER" &&
-          receiverUser.role === "FARMER") ||
-        (senderUser.role === "FARMER" &&
-          receiverUser.role === "CUSTOMER");
+        // ✅ Check if users exist
+        if (!senderUser || !receiverUser) {
+          socket.emit("error", { message: "User not found" });
+          return;
+        }
 
-      if (!valid) return;
+        // Allow only CUSTOMER <-> FARMER
+        const valid =
+          (senderUser.role === "CUSTOMER" &&
+            receiverUser.role === "FARMER") ||
+          (senderUser.role === "FARMER" &&
+            receiverUser.role === "CUSTOMER");
 
-      const roomId = createRoom(sender, receiver);
+        // ✅ Check if roles are valid
+        if (!valid) {
+          socket.emit("error", { message: "Only CUSTOMER <-> FARMER chat is allowed" });
+          return;
+        }
 
-      const newMessage = await Message.create({
-        sender,
-        receiver,
-        message,
-        chatRoom: roomId,
-      });
+        const roomId = createRoom(sender, receiver);
 
-      io.to(roomId).emit("receiveMessage", newMessage);
+        const newMessage = await Message.create({
+          sender,
+          receiver,
+          message,
+          chatRoom: roomId,
+        });
+
+        io.to(roomId).emit("receiveMessage", newMessage);
+
+      } catch (err) {
+        console.error("sendMessage error:", err.message);
+        socket.emit("error", { message: "Something went wrong" });
+      }
     });
 
     socket.on("disconnect", () => {

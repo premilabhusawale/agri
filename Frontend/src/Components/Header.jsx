@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { User, Search, MessageSquare, ArrowRight, X, Users as UsersIcon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import products from '../Data/Products'
 import Dropdown from './ui/Dropdown'
 
@@ -16,39 +17,25 @@ const WheatLogo = ({ size = 32 }) => {
       xmlns="http://www.w3.org/2000/svg"
     >
       <defs>
-        {/* Gradient for wheat */}
         <linearGradient id="wheatGradientHeader" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#F4D03F" />
           <stop offset="100%" stopColor="#D4AF37" />
         </linearGradient>
-        
-        {/* Gradient for leaves */}
         <linearGradient id="leafGradientHeader" x1="0%" y1="0%" x2="0%" y2="100%">
           <stop offset="0%" stopColor="#2D5016" />
           <stop offset="100%" stopColor="#1A5D1A" />
         </linearGradient>
       </defs>
       
-      {/* Central wheat bundle - 5 stalks */}
-      
       {/* Left wheat stalk */}
       <g transform="translate(65, 40)">
-        {/* Stem */}
-        <path d="M 15 140 Q 10 100 8 60 Q 7 30 10 0" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="3" 
-              fill="none"
-              strokeLinecap="round"/>
-        
-        {/* Wheat grains */}
+        <path d="M 15 140 Q 10 100 8 60 Q 7 30 10 0" stroke="url(#leafGradientHeader)" strokeWidth="3" fill="none" strokeLinecap="round"/>
         <ellipse cx="6" cy="15" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="11" cy="22" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="5" cy="30" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.9"/>
         <ellipse cx="10" cy="38" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.9"/>
         <ellipse cx="6" cy="46" rx="5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.85"/>
         <ellipse cx="9" cy="54" rx="4.5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.85"/>
-        
-        {/* Awns (whiskers) */}
         <line x1="11" y1="15" x2="16" y2="8" stroke="#D4AF37" strokeWidth="0.8" opacity="0.7"/>
         <line x1="16" y1="22" x2="22" y2="16" stroke="#D4AF37" strokeWidth="0.8" opacity="0.7"/>
         <line x1="10" y1="30" x2="15" y2="24" stroke="#D4AF37" strokeWidth="0.8" opacity="0.6"/>
@@ -56,12 +43,7 @@ const WheatLogo = ({ size = 32 }) => {
       
       {/* Left-center wheat stalk */}
       <g transform="translate(80, 30)">
-        <path d="M 10 150 Q 8 110 7 70 Q 6 35 8 0" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="3.5" 
-              fill="none"
-              strokeLinecap="round"/>
-        
+        <path d="M 10 150 Q 8 110 7 70 Q 6 35 8 0" stroke="url(#leafGradientHeader)" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
         <ellipse cx="5" cy="10" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="10" cy="18" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="5" cy="27" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
@@ -69,21 +51,15 @@ const WheatLogo = ({ size = 32 }) => {
         <ellipse cx="6" cy="45" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="8" cy="54" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="7" cy="63" rx="4.5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.9"/>
-        
         <line x1="10" y1="10" x2="16" y2="3" stroke="#D4AF37" strokeWidth="1" opacity="0.8"/>
         <line x1="15" y1="18" x2="21" y2="12" stroke="#D4AF37" strokeWidth="1" opacity="0.8"/>
         <line x1="10" y1="27" x2="16" y2="21" stroke="#D4AF37" strokeWidth="1" opacity="0.7"/>
         <line x1="14" y1="36" x2="20" y2="30" stroke="#D4AF37" strokeWidth="1" opacity="0.7"/>
       </g>
       
-      {/* Center wheat stalk - tallest and most prominent */}
+      {/* Center wheat stalk */}
       <g transform="translate(95, 20)">
-        <path d="M 5 160 Q 4 115 3 70 Q 2 30 5 0" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="4" 
-              fill="none"
-              strokeLinecap="round"/>
-        
+        <path d="M 5 160 Q 4 115 3 70 Q 2 30 5 0" stroke="url(#leafGradientHeader)" strokeWidth="4" fill="none" strokeLinecap="round"/>
         <ellipse cx="2" cy="8" rx="6" ry="10" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="7" cy="17" rx="6" ry="10" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="2" cy="27" rx="6" ry="10" fill="url(#wheatGradientHeader)"/>
@@ -92,7 +68,6 @@ const WheatLogo = ({ size = 32 }) => {
         <ellipse cx="5" cy="57" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="4" cy="67" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="5" cy="77" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
-        
         <line x1="8" y1="8" x2="15" y2="0" stroke="#D4AF37" strokeWidth="1.2" opacity="0.8"/>
         <line x1="13" y1="17" x2="20" y2="10" stroke="#D4AF37" strokeWidth="1.2" opacity="0.8"/>
         <line x1="8" y1="27" x2="15" y2="20" stroke="#D4AF37" strokeWidth="1.2" opacity="0.8"/>
@@ -102,12 +77,7 @@ const WheatLogo = ({ size = 32 }) => {
       
       {/* Right-center wheat stalk */}
       <g transform="translate(110, 30)">
-        <path d="M 0 150 Q 2 110 3 70 Q 4 35 2 0" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="3.5" 
-              fill="none"
-              strokeLinecap="round"/>
-        
+        <path d="M 0 150 Q 2 110 3 70 Q 4 35 2 0" stroke="url(#leafGradientHeader)" strokeWidth="3.5" fill="none" strokeLinecap="round"/>
         <ellipse cx="5" cy="10" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="0" cy="18" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
         <ellipse cx="5" cy="27" rx="5.5" ry="9" fill="url(#wheatGradientHeader)"/>
@@ -115,7 +85,6 @@ const WheatLogo = ({ size = 32 }) => {
         <ellipse cx="4" cy="45" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="2" cy="54" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="3" cy="63" rx="4.5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.9"/>
-        
         <line x1="0" y1="10" x2="-6" y2="3" stroke="#D4AF37" strokeWidth="1" opacity="0.8"/>
         <line x1="-5" y1="18" x2="-11" y2="12" stroke="#D4AF37" strokeWidth="1" opacity="0.8"/>
         <line x1="0" y1="27" x2="-6" y2="21" stroke="#D4AF37" strokeWidth="1" opacity="0.7"/>
@@ -124,36 +93,22 @@ const WheatLogo = ({ size = 32 }) => {
       
       {/* Right wheat stalk */}
       <g transform="translate(125, 40)">
-        <path d="M -5 140 Q 0 100 2 60 Q 3 30 0 0" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="3" 
-              fill="none"
-              strokeLinecap="round"/>
-        
+        <path d="M -5 140 Q 0 100 2 60 Q 3 30 0 0" stroke="url(#leafGradientHeader)" strokeWidth="3" fill="none" strokeLinecap="round"/>
         <ellipse cx="4" cy="15" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="-1" cy="22" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.95"/>
         <ellipse cx="5" cy="30" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.9"/>
         <ellipse cx="0" cy="38" rx="5" ry="8" fill="url(#wheatGradientHeader)" opacity="0.9"/>
         <ellipse cx="4" cy="46" rx="5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.85"/>
         <ellipse cx="1" cy="54" rx="4.5" ry="7" fill="url(#wheatGradientHeader)" opacity="0.85"/>
-        
         <line x1="-1" y1="15" x2="-6" y2="8" stroke="#D4AF37" strokeWidth="0.8" opacity="0.7"/>
         <line x1="-6" y1="22" x2="-12" y2="16" stroke="#D4AF37" strokeWidth="0.8" opacity="0.7"/>
         <line x1="0" y1="30" x2="-5" y2="24" stroke="#D4AF37" strokeWidth="0.8" opacity="0.6"/>
       </g>
       
-      {/* Decorative leaves at the base */}
+      {/* Decorative leaves */}
       <g opacity="0.7">
-        <path d="M 70 170 Q 60 165 55 155" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="2.5" 
-              fill="none"
-              strokeLinecap="round"/>
-        <path d="M 130 170 Q 140 165 145 155" 
-              stroke="url(#leafGradientHeader)" 
-              strokeWidth="2.5" 
-              fill="none"
-              strokeLinecap="round"/>
+        <path d="M 70 170 Q 60 165 55 155" stroke="url(#leafGradientHeader)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
+        <path d="M 130 170 Q 140 165 145 155" stroke="url(#leafGradientHeader)" strokeWidth="2.5" fill="none" strokeLinecap="round"/>
       </g>
     </svg>
   )
@@ -166,21 +121,14 @@ const TopBar = ({ isLoggedIn }) => {
   const [showSuggestions, setShowSuggestions] = useState(false)
   const [selectedIndex, setSelectedIndex] = useState(-1)
 
-  // Get unique farmers from products
   const getFarmers = () => {
     const farmersMap = new Map()
     products.forEach(product => {
       if (product.farmer) {
         if (!farmersMap.has(product.farmer)) {
-          farmersMap.set(product.farmer, {
-            name: product.farmer,
-            location: product.location,
-            image: product.image, 
-            productCount: 1
-          })
+          farmersMap.set(product.farmer, { name: product.farmer, location: product.location, image: product.image, productCount: 1 })
         } else {
-          const farmer = farmersMap.get(product.farmer)
-          farmer.productCount++
+          farmersMap.get(product.farmer).productCount++
         }
       }
     })
@@ -189,26 +137,23 @@ const TopBar = ({ isLoggedIn }) => {
 
   const farmers = getFarmers()
 
-  // Filter products based on search query
   const filteredProducts = searchQuery.trim()
     ? products.filter((product) =>
         product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (product.category && product.category.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 3) // Show max 3 product suggestions
+      ).slice(0, 3)
     : []
 
-  // Filter farmers based on search query
   const filteredFarmers = searchQuery.trim()
     ? farmers.filter((farmer) =>
         farmer.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
         (farmer.location && farmer.location.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 3) // Show max 3 farmer suggestions
+      ).slice(0, 3)
     : []
 
   const hasResults = filteredProducts.length > 0 || filteredFarmers.length > 0
   const totalResults = filteredProducts.length + filteredFarmers.length
 
-  // Handle search submission
   const handleSearch = (e) => {
     e.preventDefault()
     if (searchQuery.trim()) {
@@ -218,29 +163,23 @@ const TopBar = ({ isLoggedIn }) => {
     }
   }
 
-  // Handle product click from suggestions
   const handleProductClick = (productId) => {
     navigate(`/ProductDetails/${productId}`)
     setShowSuggestions(false)
     setSearchQuery('')
   }
 
-  // Handle farmer click from suggestions
   const handleFarmerClick = (farmerName) => {
     navigate(`/MarketPlace?search=${encodeURIComponent(farmerName)}`)
     setShowSuggestions(false)
     setSearchQuery('')
   }
 
-  // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (!showSuggestions || totalResults === 0) return
-
     if (e.key === "ArrowDown") {
       e.preventDefault()
-      setSelectedIndex((prev) => 
-        prev < totalResults - 1 ? prev + 1 : prev
-      )
+      setSelectedIndex((prev) => prev < totalResults - 1 ? prev + 1 : prev)
     } else if (e.key === "ArrowUp") {
       e.preventDefault()
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1))
@@ -249,13 +188,11 @@ const TopBar = ({ isLoggedIn }) => {
       if (selectedIndex < filteredProducts.length) {
         handleProductClick(filteredProducts[selectedIndex].id)
       } else {
-        const farmerIndex = selectedIndex - filteredProducts.length
-        handleFarmerClick(filteredFarmers[farmerIndex].name)
+        handleFarmerClick(filteredFarmers[selectedIndex - filteredProducts.length].name)
       }
     }
   }
 
-  // Handle input change
   const handleInputChange = (e) => {
     const value = e.target.value
     setSearchQuery(value)
@@ -263,7 +200,6 @@ const TopBar = ({ isLoggedIn }) => {
     setSelectedIndex(-1)
   }
 
-  // Clear search
   const handleClear = () => {
     setSearchQuery('')
     setShowSuggestions(false)
@@ -272,7 +208,7 @@ const TopBar = ({ isLoggedIn }) => {
 
   return (
     <div className="bg-[#235C42]/95 backdrop-blur-md py-5 px-8 flex items-center justify-between sticky top-0 z-50 shadow-sm">
-      {/* Logo with Wheat Icon - Circular background */}
+      {/* Logo */}
       <Link to="/" className="text-2xl flex items-center gap-2.5 hover:opacity-90 transition-opacity mr-12">
         <span className="bg-gradient-to-br from-amber-50 to-amber-100 p-3 rounded-full shadow-md border border-amber-200/50">
           <WheatLogo size={32} />
@@ -283,7 +219,7 @@ const TopBar = ({ isLoggedIn }) => {
         </span>
       </Link>
 
-      {/* Search Bar with Autocomplete */}
+      {/* Search Bar */}
       <form onSubmit={handleSearch} className="relative w-full max-w-xl mx-auto">
         <input
           type="text"
@@ -293,22 +229,11 @@ const TopBar = ({ isLoggedIn }) => {
           onKeyDown={handleKeyDown}
           onFocus={() => searchQuery.trim() && setShowSuggestions(true)}
           onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-          className="w-full pl-10 pr-10 py-2 rounded-lg
-                   bg-white/90
-                   border border-gray-300
-                   text-black placeholder-gray-400
-                   focus:outline-none focus:ring-2 focus:ring-green-500"
+          className="w-full pl-10 pr-10 py-2 rounded-lg bg-white/90 border border-gray-300 text-black placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500"
         />
-        <Search
-          className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none"
-          size={20}
-        />
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 pointer-events-none" size={20} />
         {searchQuery && (
-          <button
-            type="button"
-            onClick={handleClear}
-            className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-          >
+          <button type="button" onClick={handleClear} className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600">
             <X size={18} />
           </button>
         )}
@@ -317,41 +242,21 @@ const TopBar = ({ isLoggedIn }) => {
         <AnimatePresence>
           {showSuggestions && hasResults && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
               className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 overflow-hidden z-50"
             >
-              {/* Products Section */}
               {filteredProducts.length > 0 && (
                 <div>
                   <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      Products ({filteredProducts.length})
-                    </span>
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Products ({filteredProducts.length})</span>
                   </div>
                   {filteredProducts.map((product, index) => (
-                    <div
-                      key={product.id}
-                      onClick={() => handleProductClick(product.id)}
-                      className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${
-                        index === selectedIndex
-                          ? "bg-green-50"
-                          : "hover:bg-gray-50"
-                      } border-b border-gray-100`}
-                    >
-                      <img
-                        src={product.image}
-                        alt={product.name}
-                        className="w-12 h-12 rounded-lg object-cover"
-                      />
+                    <div key={product.id} onClick={() => handleProductClick(product.id)}
+                      className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${index === selectedIndex ? "bg-green-50" : "hover:bg-gray-50"} border-b border-gray-100`}>
+                      <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover" />
                       <div className="flex-1">
-                        <h4 className="font-semibold text-gray-900 text-sm">
-                          {product.name}
-                        </h4>
-                        <p className="text-xs text-gray-500">
-                          {product.farmer} • ₹{product.price}/{product.unit}
-                        </p>
+                        <h4 className="font-semibold text-gray-900 text-sm">{product.name}</h4>
+                        <p className="text-xs text-gray-500">{product.farmer} • ₹{product.price}/{product.unit}</p>
                       </div>
                       <ArrowRight className="w-4 h-4 text-gray-400" />
                     </div>
@@ -359,36 +264,22 @@ const TopBar = ({ isLoggedIn }) => {
                 </div>
               )}
 
-              {/* Farmers Section */}
               {filteredFarmers.length > 0 && (
                 <div>
                   <div className="px-3 py-2 bg-gray-50 border-b border-gray-200">
-                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">
-                      Farmers ({filteredFarmers.length})
-                    </span>
+                    <span className="text-xs font-semibold text-gray-600 uppercase tracking-wide">Farmers ({filteredFarmers.length})</span>
                   </div>
                   {filteredFarmers.map((farmer, index) => {
                     const globalIndex = filteredProducts.length + index
                     return (
-                      <div
-                        key={farmer.name}
-                        onClick={() => handleFarmerClick(farmer.name)}
-                        className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${
-                          globalIndex === selectedIndex
-                            ? "bg-green-50"
-                            : "hover:bg-gray-50"
-                        } border-b border-gray-100`}
-                      >
+                      <div key={farmer.name} onClick={() => handleFarmerClick(farmer.name)}
+                        className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${globalIndex === selectedIndex ? "bg-green-50" : "hover:bg-gray-50"} border-b border-gray-100`}>
                         <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
                           <UsersIcon className="w-6 h-6 text-green-600" />
                         </div>
                         <div className="flex-1">
-                          <h4 className="font-semibold text-gray-900 text-sm">
-                            {farmer.name}
-                          </h4>
-                          <p className="text-xs text-gray-500">
-                            {farmer.location} • {farmer.productCount} products
-                          </p>
+                          <h4 className="font-semibold text-gray-900 text-sm">{farmer.name}</h4>
+                          <p className="text-xs text-gray-500">{farmer.location} • {farmer.productCount} products</p>
                         </div>
                         <ArrowRight className="w-4 h-4 text-gray-400" />
                       </div>
@@ -397,11 +288,7 @@ const TopBar = ({ isLoggedIn }) => {
                 </div>
               )}
 
-              {/* See All Results Footer */}
-              <div
-                onClick={handleSearch}
-                className="p-3 bg-gray-50 text-center cursor-pointer hover:bg-gray-100 transition-colors"
-              >
+              <div onClick={handleSearch} className="p-3 bg-gray-50 text-center cursor-pointer hover:bg-gray-100 transition-colors">
                 <span className="text-sm text-green-600 font-semibold flex items-center justify-center gap-2">
                   <Search className="w-4 h-4" />
                   See all results for "{searchQuery}"
@@ -411,23 +298,14 @@ const TopBar = ({ isLoggedIn }) => {
           )}
         </AnimatePresence>
 
-        {/* No Results */}
         <AnimatePresence>
           {showSuggestions && searchQuery.trim() && !hasResults && (
             <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -10 }}
+              initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -10 }}
               className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 text-center z-50"
             >
-              <p className="text-gray-500 text-sm">
-                No products or farmers found for "{searchQuery}"
-              </p>
-              <button
-                type="button"
-                onClick={() => navigate("/MarketPlace")}
-                className="mt-2 text-green-600 text-sm font-semibold hover:text-green-700"
-              >
+              <p className="text-gray-500 text-sm">No products or farmers found for "{searchQuery}"</p>
+              <button type="button" onClick={() => navigate("/MarketPlace")} className="mt-2 text-green-600 text-sm font-semibold hover:text-green-700">
                 Browse all products
               </button>
             </motion.div>
@@ -435,39 +313,26 @@ const TopBar = ({ isLoggedIn }) => {
         </AnimatePresence>
       </form>
 
-      {/* Authentication Section on Right */}
+      {/* Auth Buttons */}
       <div className="flex gap-3 ml-8">
         {isLoggedIn ? (
           <>
-            {/* Messages Button */}
-            <button
-              onClick={() => navigate('/messages')}
-              className=" px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium text-base transition-all duration-200 ease-out  hover:border-white/30 relative"
-              title="Messages"
-            >
+            <button onClick={() => navigate('/messages')}
+              className="px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium text-base transition-all duration-200 ease-out hover:border-white/30 relative"
+              title="Messages">
               <MessageSquare size={20} strokeWidth={2} />
-            
             </button>
-            
-            {/* User Dropdown */}
             <Dropdown />
           </>
         ) : (
           <>
-            {/* Messages Button for Non-logged in users - redirects to auth */}
-            <button
-              onClick={() => navigate('/Auth')}
+            <button onClick={() => navigate('/Auth')}
               className="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg flex items-center gap-2 text-white font-medium text-base transition-all duration-200 ease-out border border-white/20 hover:border-white/30"
-              title="Login to view messages"
-            >
+              title="Login to view messages">
               <MessageSquare size={20} strokeWidth={2} />
             </button>
-
-            {/* Login Button */}
-            <button
-              onClick={() => navigate('/Auth')}
-              className="bg-amber-500 px-6 py-2 rounded-lg flex items-center gap-2.5 text-black font-bold text-base transition-all duration-200 ease-out shadow-md hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-md"
-            >
+            <button onClick={() => navigate('/Auth')}
+              className="bg-amber-500 px-6 py-2 rounded-lg flex items-center gap-2.5 text-black font-bold text-base transition-all duration-200 ease-out shadow-md hover:-translate-y-1 hover:shadow-xl active:translate-y-0 active:shadow-md">
               <User size={20} strokeWidth={2.5} />
               <span className="text-black">Login</span>
             </button>
@@ -478,57 +343,98 @@ const TopBar = ({ isLoggedIn }) => {
   )
 }
 
-// NavBar Component
+// NavBar with Language Switcher
 const NavBar = () => {
+  const { t, i18n } = useTranslation()
+  const currentLang = i18n.language
+
+  const handleLanguageChange = (lang) => {
+    i18n.changeLanguage(lang)
+    localStorage.setItem('language', lang)
+  }
+
   return (
     <nav className="bg-white border-b border-gray-200 py-3.5 px-8 sticky top-[88px] z-40 shadow-sm">
-      <div className="flex items-center justify-center max-w-7xl mx-auto">
-        {/* Navigation Links - Centered */}
+      <div className="flex items-center justify-between max-w-7xl mx-auto">
+        {/* Navigation Links */}
         <div className="flex gap-2 text-gray-600 font-medium">
-          <Link
-            to="/"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >
-            Home
+          <Link to="/" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('home')}
           </Link>
-          <Link
-            to="/MarketPlace"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >
-            Marketplace
+          <Link to="/MarketPlace" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('marketplace')}
           </Link>
-          <Link
-            to="/LivePrices"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >
-            Live Prices
+          <Link to="/LivePrices" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('livePrices')}
           </Link>
-          <Link
-            to="/ForFarmers"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >
-            For Farmers
+          <Link to="/ForFarmers" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('forFarmers')}
           </Link>
-          <Link
-            to="/About"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >
-            About
+          <Link to="/About" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('about')}
           </Link>
-          <Link
-            to="/FarmerDashboard"
-            className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200"
-          >FarmerDashboard</Link>
-          
+          <Link to="/FarmerDashboard" className="hover:text-green-800 hover:bg-gray-100 px-5 py-2.5 rounded-full transition-colors duration-200">
+            {t('farmerDashboard')}
+          </Link>
+        </div>
+
+        {/* Language Switcher */}
+        <div className="flex items-center gap-1 bg-gray-100 rounded-full px-2 py-1">
+          <span className="text-sm text-gray-500 mr-1">🌐</span>
+          {[
+            { code: 'en', label: 'EN' },
+            { code: 'hi', label: 'हि' },
+            { code: 'mr', label: 'म' }
+          ].map((lang) => (
+            <button
+              key={lang.code}
+              onClick={() => handleLanguageChange(lang.code)}
+              className={`px-3 py-1 rounded-full text-sm font-medium transition-all duration-200 ${
+                currentLang === lang.code
+                  ? 'bg-green-700 text-white shadow-sm'
+                  : 'text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              {lang.label}
+            </button>
+          ))}
         </div>
       </div>
     </nav>
   )
 }
 
-// Main Header Component
+// ✅ FIXED: Main Header Component - Now properly checks localStorage
 const Header = () => {
-  const isLoggedIn = true // Replace with actual authentication logic
+  const [isLoggedIn, setIsLoggedIn] = useState(false)
+
+  useEffect(() => {
+    // ✅ Check if user is actually logged in
+    const checkLoginStatus = () => {
+      const user = localStorage.getItem('user')
+      const jwt = localStorage.getItem('jwt')
+      
+      console.log('Header checking login status:')
+      console.log('- user:', user)
+      console.log('- jwt:', jwt)
+      
+      setIsLoggedIn(!!(user && jwt))
+    }
+
+    // Check on mount
+    checkLoginStatus()
+
+    // ✅ Listen for storage changes (if user logs in/out in another tab)
+    window.addEventListener('storage', checkLoginStatus)
+
+    // ✅ Listen for custom event when user logs in
+    window.addEventListener('userLoggedIn', checkLoginStatus)
+
+    return () => {
+      window.removeEventListener('storage', checkLoginStatus)
+      window.removeEventListener('userLoggedIn', checkLoginStatus)
+    }
+  }, [])
 
   return (
     <>
