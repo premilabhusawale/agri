@@ -4,33 +4,33 @@ dotenv.config({
     quiet: true
 });
 
-const app = require('./app');
-const databaseConnect = require('./config/db');
 const http = require('http');
 const { Server } = require('socket.io');
-const chatSocket = require('./sockets/chatSocket');
+const app = require('./app');
+const databaseConnect = require('./config/db');
+const chatSocket = require('./sockets/chatSocket');       
 const chatbotSocket = require('./sockets/chatbotSocket'); 
 
 databaseConnect();
 
 const PORT = process.env.PORT || 8585;
 
-// 🔥 Create HTTP server
+// ✅ Create HTTP server from express app
 const server = http.createServer(app);
 
-// 🔥 Attach Socket.io
+// ✅ Attach Socket.io to HTTP server
 const io = new Server(server, {
   cors: {
-    origin: "*", // change in production
-    methods: ["GET", "POST"]
-  }
+    origin: "*", // change to your frontend URL in production
+    methods: ["GET", "POST"],
+  },
 });
 
-// 🔥 Initialize chat socket
+// ✅ Initialize both sockets on same io instance
 chatSocket(io);
 chatbotSocket(io);
 
-// 🚀 Start server
+// ✅ Listen on server (not app)
 server.listen(PORT, () => {
   console.log(`🚀 Server started → http://localhost:${PORT}`);
 });

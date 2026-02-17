@@ -9,7 +9,7 @@ const orderItemSchema = new mongoose.Schema(
     },
     skuCode: {
       type: String,
-      required: true,
+      default: null, // ✅ removed required: true
     },
     quantity: {
       type: Number,
@@ -35,14 +35,13 @@ const orderItemSchema = new mongoose.Schema(
     },
     image: String,
     title: String,
-     isDeleted: {
+    isDeleted: {
       type: Boolean,
       default: false,
     },
   },
-
   { timestamps: true }
 );
 
 const OrderItem = mongoose.model("OrderItem", orderItemSchema);
-module.exports = OrderItem
+module.exports = OrderItem;

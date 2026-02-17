@@ -1,6 +1,5 @@
-
-const Rating = require ("../models/Rating.js");
-const Product = require ("../models/Product.js");
+const Rating = require("../models/Rating.js");
+const Product = require("../models/Product.js");
 
 const createRating = async (data, user) => {
   if (!data) throw new Error("Request body missing");
@@ -16,8 +15,6 @@ const createRating = async (data, user) => {
   const product = await Product.findById(productId);
   if (!product) throw new Error("Product not found");
 
-
-  // Prevent duplicate rating (product + sku)
   const alreadyRated = await Rating.findOne({
     user: user._id,
     product: productId,
@@ -37,7 +34,7 @@ const createRating = async (data, user) => {
   product.numRatings = product.ratings.length;
   await product.save();
 
-  return await newRating.populate("user", " email");
+  return await newRating.populate("user", "email");
 };
 
 const getAllRatings = async (productId, skuCode = null) => {
@@ -67,10 +64,28 @@ const updateRating = async (ratingId, userId, value) => {
   return rating;
 };
 
+// DELETE ✅
+const deleteRating = async (ratingId, userId) => {
+  const rating = await Rating.findById(ratingId);
+  if (!rating) throw new Error("Rating not found");
 
+  if (rating.user.toString() !== userId.toString()) {
+    throw new Error("Unauthorized - you can only delete your own rating");
+  }
+
+  await Rating.findByIdAndDelete(ratingId);
+
+  await Product.findByIdAndUpdate(rating.product, {
+    $pull: { ratings: rating._id },
+    $inc: { numRatings: -1 },
+  });
+
+  return { message: "Rating deleted successfully" };
+};
 
 module.exports = {
   createRating,
   getAllRatings,
   updateRating,
+  deleteRating, 
 };

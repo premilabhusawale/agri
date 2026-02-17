@@ -1,6 +1,4 @@
-
 const mongoose = require('mongoose');
-
 
 const userSchema = new mongoose.Schema({
     name: {
@@ -25,19 +23,12 @@ const userSchema = new mongoose.Schema({
     },
     role: {
         type: String,
-        enum: ['CUSTOMER', 'ADMIN', 'FARMER'],
+        enum: ['CUSTOMER', 'ADMIN'],
         default: "CUSTOMER"
     },
     photo: {
         type: String,
     },
-    resetPasswordToken: {
-        type: String
-    },
-    resetPasswordExpires: {
-        type: Date
-    },
-
     createdAt: {
         type: Date,
         default: Date.now()
@@ -48,29 +39,15 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpires: {
         type: Date,
     },
-    wishlist: [
+    wishlist: [ // ✅ added
         {
             productId: {
                 type: mongoose.Schema.Types.ObjectId,
                 ref: "products",
-                required: true,
-            },
-            addedAt: {
-                type: Date,
-                default: Date.now,
             },
         },
     ],
-    ratings: [{ type: mongoose.Schema.Types.ObjectId, ref: "ratings" }],
-    reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "reviews" }],
-
-    language: {
-        type: String,
-        enum: ['en', 'hi', 'mr'],
-        default: 'en'
-    }
-})
-
+});
 
 const User = mongoose.model('users', userSchema);
-module.exports = User
+module.exports = User;

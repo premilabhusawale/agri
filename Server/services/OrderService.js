@@ -5,7 +5,7 @@ const OrderItem = require("../models/OrderItem.js");
 const { sendEmail } = require("../config/email.js");
 const orderEmailTemplate = require('../utils/emailTemplate.js');
 
-// CLACULATE PRODUCT DISCOUNT
+// CALCULATE PRODUCT DISCOUNT
 const calculateDiscountPercent = (price, discountedPrice) => {
   if (!price || price === 0) return 0;
   return Math.round(((price - discountedPrice) / price) * 100);
@@ -22,8 +22,7 @@ const findOrderById = async (orderId) => {
   return order;
 };
 
-
-//  CREATE ORDER FROM CART
+// CREATE ORDER FROM CART
 const createOrder = async (user, shippingAddress) => {
   if (!shippingAddress || Object.keys(shippingAddress).length === 0) {
     throw new Error("Shipping address required");
@@ -35,7 +34,7 @@ const createOrder = async (user, shippingAddress) => {
   if (shippingAddress._id) {
     address = await Address.findById(shippingAddress._id);
     if (!address) throw new Error("Address not found");
-  } 
+  }
   // Create new address
   else {
     address = await Address.create({
@@ -52,11 +51,10 @@ const createOrder = async (user, shippingAddress) => {
 
   const orderItems = [];
 
-
   for (const item of items) {
     const orderItem = await OrderItem.create({
       product: item.product._id,
-     skuCode: item.product.productSku,
+      skuCode: item.product.productSku || item.product.sku || null, // ✅ safe fallback
       quantity: item.quantity,
       price: item.price,
       discountedPrice: item.discountedPrice,
@@ -82,9 +80,7 @@ const createOrder = async (user, shippingAddress) => {
   return order;
 };
 
-
-
-//  UPDATE ORDER STATUS
+// UPDATE ORDER STATUS
 const updateOrderStatus = async (orderId, status, emailSubject, emailMessage) => {
   const order = await findOrderById(orderId);
   order.orderStatus = status;
@@ -106,7 +102,7 @@ const placeOrder = (orderId) =>
     orderId,
     "PLACED",
     "Order Placed Successfully 🎉",
-    "Your order has been placed successfully. We’ll notify you once it’s confirmed."
+    "Your order has been placed successfully. We'll notify you once it's confirmed."
   );
 
 // CONFIRM ORDER
@@ -136,16 +132,16 @@ const deliverOrder = (orderId) =>
     "Your order has been successfully delivered! We hope you enjoy your purchase."
   );
 
-// CONCEL ORDER
+// CANCEL ORDER
 const cancelOrder = (orderId) =>
   updateOrderStatus(
     orderId,
     "CANCELLED",
     "Order Cancelled ❌",
-    "Your order has been cancelled. If you didn’t request this, please contact our support."
+    "Your order has been cancelled. If you didn't request this, please contact our support."
   );
 
-//  USER ORDER HISTORY
+// USER ORDER HISTORY
 const userOrderHistory = async (userId) => {
   const orders = await Order.find({ user: userId })
     .populate({
@@ -221,40 +217,37 @@ const deleteOrderById = async (orderId) => {
   return { message: "Order deleted, items moved to history" };
 };
 
-
+// GET HISTORY
 const getHistory = async (user) => {
   return await OrderItem.find({
     userId: user._id,
-    isDeleted: true
+    isDeleted: true,
   })
     .populate("product", "title image price discountedPrice")
     .sort({ createdAt: -1 })
     .lean();
 };
 
+// DELETE ORDER ITEM
 const deleteOrderItem = async (orderItemId, user) => {
   const item = await OrderItem.findById(orderItemId);
   if (!item) throw new Error("Order item not found");
 
-  // ✅ Sirf history item hi delete ho
   if (!item.isDeleted) {
     throw new Error("Item is not in history");
   }
 
-  // ✅ Security
   if (user.role !== "ADMIN" && item.userId.toString() !== user._id.toString()) {
     throw new Error("Unauthorized");
   }
 
-  // 🔥 REAL DELETE
   await OrderItem.findByIdAndDelete(orderItemId);
 
   return { message: "Order item permanently deleted from history" };
 };
 
-
 // EXPORT ALL
-module.exports =  {
+module.exports = {
   getHistory,
   deleteOrderItem,
   createOrder,

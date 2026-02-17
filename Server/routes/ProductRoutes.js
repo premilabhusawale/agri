@@ -7,7 +7,7 @@ const { upload, uploadProduct } = require("../config/cloudnary");
 
 /* ADMIN */
 router.post(
-  "/create",
+  "/product/create",
   authenticate,
   admin("ADMIN"),
   uploadProduct,
@@ -15,25 +15,25 @@ router.post(
 );
 
 router.delete(
-  "/:id",
+  "/product/:id",
   authenticate,
   admin("ADMIN"),
   Product_Controller.deleteProduct
 );
 
 router.put(
-  "/:id",
+  "/product/:id",
   authenticate,
   admin("ADMIN"),
-  uploadProduct, // same Multer middleware
+  uploadProduct,
   Product_Controller.updateProduct
 );
 
 /* PUBLIC */
-router.get("/hot-deals", Product_Controller.getHotDeals);
-router.get("/", Product_Controller.getAllProducts);
-router.get("/category/:category", Product_Controller.getProductsByCategory);
-router.get("/:id", Product_Controller.findProductById);
-router.get("/:id/related", Product_Controller.getRelatedProducts);
+router.get("/product/hot-deals", Product_Controller.getHotDeals);
+router.get("/product", Product_Controller.getAllProducts);
+router.get("/product/category/:category", Product_Controller.getProductsByCategory);
+router.get("/product/:id", Product_Controller.findProductById);
+router.get("/product/:id/related", Product_Controller.getRelatedProducts);
 
 module.exports = router;
