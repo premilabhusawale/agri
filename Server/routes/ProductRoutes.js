@@ -35,5 +35,5 @@ router.get("/product", Product_Controller.getAllProducts);
 router.get("/product/category/:category", Product_Controller.getProductsByCategory);
 router.get("/product/:id", Product_Controller.findProductById);
 router.get("/product/:id/related", Product_Controller.getRelatedProducts);
-
+router.get("/product/filter", Product_Controller.filterProducts);
 module.exports = router;

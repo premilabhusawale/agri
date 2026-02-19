@@ -1,5 +1,7 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
+import { registerUser, loginUser } from '../states/Auth/Action'; // ← same import as teacher
 
 /* ─── Inline Toast ───────────────────────────────────────── */
 const TOAST_COLORS = {
@@ -38,41 +40,7 @@ const useToast = () => {
   return { toast, ToastContainer };
 };
 
-/* ─── Fake user "database" ───────────────────────────────── */
-const FAKE_USERS = [
-  { _id:'user_001', name:'Ravi',   surname:'Patil',   email:'ravi@test.com',   password:'123456', mobile:'9876543210', role:'farmer',   language:'mr' },
-  { _id:'user_002', name:'Sunita', surname:'Sharma',  email:'sunita@test.com', password:'123456', mobile:'9123456780', role:'customer',  language:'hi' },
-  { _id:'user_003', name:'Demo',   surname:'User',    email:'demo@test.com',   password:'demo123',mobile:'9000000000', role:'farmer',   language:'en' },
-];
-
-const fakeLogin = (email, password) => {
-  const user = FAKE_USERS.find(u => u.email === email && u.password === password);
-  if (!user) return null;
-  const { password: _, ...safeUser } = user;
-  return { jwt: `fake-jwt-${user._id}-${Date.now()}`, user: safeUser };
-};
-
-const fakeSignup = (formData, role, photo) => {
-  // Check if email already exists
-  const exists = FAKE_USERS.find(u => u.email === formData.email);
-  if (exists) return { error: 'Email already registered. Please login.' };
-
-  const newUser = {
-    _id:      `user_${Date.now()}`,
-    name:     formData.name,
-    surname:  formData.surname,
-    email:    formData.email,
-    mobile:   formData.mobile,
-    language: formData.language,
-    role,
-    photo:    photo ? photo.name : null,
-  };
-  // Push to fake DB so they can login again in the same session
-  FAKE_USERS.push({ ...newUser, password: formData.password });
-  return { jwt: `fake-jwt-${newUser._id}-${Date.now()}`, user: newUser };
-};
-
-/* ─── Styles (unchanged) ─────────────────────────────────── */
+/* ─── Styles ─────────────────────────────────────────────── */
 const S = {
   page: {
     minHeight: '100vh',
@@ -155,26 +123,66 @@ const S = {
   footer: { textAlign: 'center', marginTop: '1rem' },
   footerBtn: { background: 'none', border: 'none', color: '#16a34a', fontWeight: '600', fontSize: '0.875rem', cursor: 'pointer', fontFamily: "'Segoe UI', sans-serif" },
   forgotBtn: { background: 'none', border: 'none', color: '#9ca3af', fontSize: '0.82rem', cursor: 'pointer', marginTop: '0.75rem', display: 'block', width: '100%', textAlign: 'center', fontFamily: "'Segoe UI', sans-serif" },
-  demoBox: { background: '#fffbeb', border: '1px solid #fde68a', borderRadius: '0.65rem', padding: '0.6rem 1rem', color: '#92400e', fontSize: '0.78rem', fontFamily: "'Segoe UI', sans-serif", marginBottom: '0.5rem', lineHeight: 1.6 },
 };
 
 /* ─── Auth Component ─────────────────────────────────────── */
 const Auth = () => {
-  const navigate = useNavigate();
+  const navigate  = useNavigate();
+  const dispatch  = useDispatch();
+
+  // ── Pull loading, error and user from Redux store (same as teacher) ──
+  // Tries s.auth first, then s.Auth (capital A) as a fallback
+  const authState = useSelector((s) => s.auth ?? s.Auth ?? {});
+  const { loading = false, error: reduxError = null, user = null } = authState;
+
   const { toast, ToastContainer } = useToast();
 
-  const [step,       setStep]       = useState('form');
-  const [isLogin,    setIsLogin]    = useState(true);
-  const [role,       setRole]       = useState(null);
-  const [loading,    setLoading]    = useState(false);
-  const [loadingMsg, setLoadingMsg] = useState('');
-  const [error,      setError]      = useState('');
-  const [photo,      setPhoto]      = useState(null);
+  const [step,    setStep]    = useState('form');
+  const [isLogin, setIsLogin] = useState(true);
+  const [role,    setRole]    = useState(null);
+  const [error,   setError]   = useState('');
+  const [photo,   setPhoto]   = useState(null);
 
   const [formData, setFormData] = useState({
     name: '', surname: '', mobile: '',
     email: '', password: '', language: 'en',
   });
+
+  // ── Mirror Redux error into local error state (same as teacher) ──
+  useEffect(() => {
+    if (reduxError) setError(reduxError);
+  }, [reduxError]);
+
+  // ── Navigate after successful login/register ──
+  useEffect(() => {
+    if (!user) return;
+
+    // Save user object to localStorage so Header can read it
+    localStorage.setItem('user', JSON.stringify(user));
+
+    // Fire custom event so Header updates immediately without page reload
+    window.dispatchEvent(new Event('userLoggedIn'));
+
+    const userRole = user.role || user?.user?.role || user?.data?.role;
+
+    console.log('USER OBJECT FROM REDUX:', JSON.stringify(user, null, 2));
+
+    const userName = user.name || user?.user?.name || user?.data?.name || 'there';
+
+    if (userRole === 'ADMIN') {
+      toast.success(`Welcome, ${userName}! Redirecting to dashboard...`);
+      navigate('/admin', { replace: true });
+    } else if (userRole === 'farmer') {
+      toast.success(`Welcome, ${userName}! 🌾`);
+      navigate('/', { replace: true });
+    } else if (userRole === 'customer') {
+      toast.success(`Welcome, ${userName}! 🛒`);
+      navigate('/', { replace: true });
+    } else {
+      toast.success(`Welcome, ${userName}!`);
+      navigate('/', { replace: true });
+    }
+  }, [user]);
 
   const onFocus = (e) => { e.target.style.borderColor = '#16a34a'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.15)'; };
   const onBlur  = (e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; };
@@ -198,55 +206,40 @@ const Auth = () => {
     setFormData({ name: '', surname: '', mobile: '', email: '', password: '', language: 'en' });
   };
 
-  /* ── Submit ─────────────────────────────────────────────── */
+  /* ── Submit — uses real API via Redux (same as teacher) ─── */
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
     setError('');
 
-    // Simulate network delay
-    await new Promise(res => setTimeout(res, 800));
+    if (!isLogin) {
+      // ── REGISTER ──────────────────────────────────────────
+      // Build FormData so multer can read req.file on the backend (same as teacher)
+      const data = new FormData();
+      data.append('name',     formData.name);
+      data.append('surname',  formData.surname);
+      data.append('email',    formData.email);
+      data.append('mobile',   formData.mobile);
+      data.append('password', formData.password);
+      data.append('language', formData.language);
+      data.append('role',     role);           // send role to backend
+      if (photo) data.append('photo', photo);  // multer reads this as req.file
 
-    try {
-      if (isLogin) {
-        setLoadingMsg('Logging in...');
-
-        const result = fakeLogin(formData.email, formData.password);
-        if (!result) {
-          setError('Invalid email or password. Try demo@test.com / demo123');
-          return;
-        }
-
-        localStorage.setItem('jwt',  result.jwt);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        toast.success('Login successful! Welcome back 👋');
-        navigate('/');
-        window.location.reload();
-
-      } else {
-        setLoadingMsg('Creating your account...');
-
-        const result = fakeSignup(formData, role, photo);
-        if (result.error) {
-          setError(result.error);
-          return;
-        }
-
-        await new Promise(res => setTimeout(res, 400)); // simulate role-set step
-        setLoadingMsg(`Setting role as ${role}...`);
-
-        localStorage.setItem('jwt',  result.jwt);
-        localStorage.setItem('user', JSON.stringify(result.user));
-        toast.success('Account created! Welcome to AgriConnect 🌾');
-        navigate('/');
-        window.location.reload();
+      const res = await dispatch(registerUser(data));
+      if (res?.error) {
+        setError(res.error.message || 'Registration failed');
       }
+      // Navigation is handled by the useEffect above when `user` updates in Redux
 
-    } catch (err) {
-      setError('Something went wrong. Please try again.');
-    } finally {
-      setLoading(false);
-      setLoadingMsg('');
+    } else {
+      // ── LOGIN ─────────────────────────────────────────────
+      const res = await dispatch(loginUser({
+        email:    formData.email,
+        password: formData.password,
+      }));
+      if (res?.error) {
+        setError(res.error.message || 'Login failed');
+      }
+      // Navigation is handled by the useEffect above when `user` updates in Redux
     }
   };
 
@@ -307,15 +300,6 @@ const Auth = () => {
           <span style={S.logoSub}>{isLogin ? 'Welcome back!' : 'Join our farming community'}</span>
         </div>
 
-        {/* Demo credentials hint */}
-        {isLogin && (
-          <div style={S.demoBox}>
-            🧪 <strong>Demo accounts:</strong><br />
-            farmer → <code>ravi@test.com</code> / <code>123456</code><br />
-            customer → <code>sunita@test.com</code> / <code>123456</code>
-          </div>
-        )}
-
         {!isLogin && role && (
           <div style={S.roleBadgeWrap}>
             <span style={S.roleBadge(roleAccent)}>
@@ -325,10 +309,10 @@ const Auth = () => {
           </div>
         )}
 
-        {loading && loadingMsg && <div style={S.infoBox}>⏳ {loadingMsg}</div>}
-        {error && <div style={S.errorBox}>⚠️ {error}</div>}
+        {loading && <div style={S.infoBox}>⏳ {isLogin ? 'Logging in...' : 'Creating your account...'}</div>}
+        {error   && <div style={S.errorBox}>⚠️ {error}</div>}
 
-        <form onSubmit={handleSubmit} style={S.form}>
+        <form onSubmit={handleSubmit} style={S.form} noValidate>
           {!isLogin && (
             <>
               <div style={S.twoCol}>
@@ -384,7 +368,7 @@ const Auth = () => {
                   <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="4" opacity="0.25" />
                   <path fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                {loadingMsg || (isLogin ? 'Logging in...' : 'Creating account...')}
+                {isLogin ? 'Logging in...' : 'Creating account...'}
               </>
             ) : (
               isLogin ? 'Login' : 'Create Account'

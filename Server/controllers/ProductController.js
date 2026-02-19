@@ -3,11 +3,7 @@ const Product_Service = require("../services/ProductService.js");
 /* CREATE */
 const createProduct = async (req, res) => {
   try {
-    const product = await Product_Service.createProduct(
-      req.body,
-      req.files
-    );
-
+    const product = await Product_Service.createProduct(req.body, req.files);
     res.status(201).json(product);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -27,11 +23,7 @@ const deleteProduct = async (req, res) => {
 /* UPDATE */
 const updateProduct = async (req, res) => {
   try {
-    const product = await Product_Service.updateProduct(
-      req.params.id,
-      req.body,
-      req.files
-    );
+    const product = await Product_Service.updateProduct(req.params.id, req.body, req.files);
     res.status(200).json(product);
   } catch (error) {
     res.status(404).json({ message: error.message });
@@ -72,9 +64,7 @@ const findProductById = async (req, res) => {
 /* GET RELATED PRODUCTS */
 const getRelatedProducts = async (req, res) => {
   try {
-    const relatedProducts = await Product_Service.getRelatedProducts(
-      req.params.id
-    );
+    const relatedProducts = await Product_Service.getRelatedProducts(req.params.id);
     res.status(200).json(relatedProducts);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -84,9 +74,17 @@ const getRelatedProducts = async (req, res) => {
 /* GET PRODUCTS BY CATEGORY */
 const getProductsByCategory = async (req, res) => {
   try {
-    const products = await Product_Service.getProductsByCategory(
-      req.params.category
-    );
+    const products = await Product_Service.getProductsByCategory(req.params.category);
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+/* FILTER PRODUCTS ✅ */
+const filterProducts = async (req, res) => {
+  try {
+    const products = await Product_Service.filterProducts(req.query);
     res.status(200).json(products);
   } catch (error) {
     res.status(500).json({ message: error.message });
@@ -101,5 +99,6 @@ module.exports = {
   getAllProducts,
   getProductsByCategory,
   findProductById,
-  getRelatedProducts
+  getRelatedProducts,
+  filterProducts, // ✅
 };
