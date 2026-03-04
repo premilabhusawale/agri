@@ -1,5 +1,5 @@
 import { useState, useCallback } from 'react';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom'; // ✅ useParams instead of useSearchParams
 import axios from 'axios';
 
 const API_BASE = 'http://localhost:8585/api/v1';
@@ -104,7 +104,6 @@ const S = {
   successTitle: { fontWeight: 800, color: '#15803d', fontSize: '1.1rem', marginBottom: '0.4rem' },
   successDesc: { color: '#6b7280', fontSize: '0.85rem', lineHeight: 1.6 },
 
-  // password strength bar
   strengthWrap: { marginTop: '0.4rem' },
   strengthBar: (pct, color) => ({
     height: '4px', borderRadius: '2px',
@@ -142,14 +141,10 @@ const getStrength = (pwd) => {
    COMPONENT
 ══════════════════════════════════════════════════════════ */
 const ForgotPassword = () => {
-  const navigate       = useNavigate();
-  const [searchParams] = useSearchParams();
+  const navigate = useNavigate();
+  const { resetToken: tokenFromUrl } = useParams(); // ✅ reads /reset-password/:resetToken from URL
   const { toast, ToastContainer } = useToast();
 
-  // If URL has ?token=xxx we're on reset step, otherwise forgot step
-  const tokenFromUrl = searchParams.get('token');
-
-  // ── Step: 'forgot' | 'sent' | 'reset' | 'done' ──
   const [step,     setStep]     = useState(tokenFromUrl ? 'reset' : 'forgot');
   const [email,    setEmail]    = useState('');
   const [token,    setToken]    = useState(tokenFromUrl || '');
@@ -166,13 +161,17 @@ const ForgotPassword = () => {
   /* ── Step 1: Send reset email ── */
   const handleForgot = async (e) => {
     e.preventDefault();
+    console.log('🔥 Form submitted with email:', email);
     if (!email) return toast.error('Please enter your email');
     setLoading(true);
     try {
+      console.log('📡 Calling API:', `${API_BASE}/auth/forgot-password`);
       await axios.post(`${API_BASE}/auth/forgot-password`, { email });
+      console.log('✅ API call successful');
       setStep('sent');
       toast.success('Reset link sent to your email!');
     } catch (err) {
+      console.log('❌ API Error:', err.response?.data || err.message);
       toast.error(err.response?.data?.message || 'Email not found. Please check and try again.');
     } finally {
       setLoading(false);
@@ -182,14 +181,14 @@ const ForgotPassword = () => {
   /* ── Step 2: Reset with token ── */
   const handleReset = async (e) => {
     e.preventDefault();
-    if (!password)               return toast.error('Please enter a new password');
-    if (password.length < 6)     return toast.error('Password must be at least 6 characters');
-    if (password !== confirm)    return toast.error('Passwords do not match');
-    if (strength.pct < 50)       return toast.error('Please use a stronger password');
+    if (!password)            return toast.error('Please enter a new password');
+    if (password.length < 6)  return toast.error('Password must be at least 6 characters');
+    if (password !== confirm)  return toast.error('Passwords do not match');
+    if (strength.pct < 50)    return toast.error('Please use a stronger password');
 
     setLoading(true);
     try {
-      await axios.post(`${API_BASE}/auth/reset-password`, { token, password });
+      await axios.post(`${API_BASE}/auth/reset-password`, { token, newPassword: password, confirmPassword: confirm });
       setStep('done');
       toast.success('Password reset successfully!');
     } catch (err) {
@@ -199,9 +198,6 @@ const ForgotPassword = () => {
     }
   };
 
-  /* ══════════════════════════════
-     RENDER
-  ══════════════════════════════ */
   return (
     <div style={S.page}>
       <ToastContainer />
@@ -249,7 +245,7 @@ const ForgotPassword = () => {
                 ) : '📧 Send Reset Link'}
               </button>
             </form>
-            <button style={S.backBtn} onClick={() => navigate('/auth')}>
+            <button style={S.backBtn} onClick={() => navigate('/Auth')}>
               ← Back to Login
             </button>
           </>
@@ -273,13 +269,13 @@ const ForgotPassword = () => {
             >
               Try a different email
             </button>
-            <button style={S.backBtn} onClick={() => navigate('/auth')}>
+            <button style={S.backBtn} onClick={() => navigate('/Auth')}>
               ← Back to Login
             </button>
           </>
         )}
 
-        {/* ── STEP: reset (came from email link with ?token=) ── */}
+        {/* ── STEP: reset ── */}
         {step === 'reset' && (
           <>
             <div style={S.stepIcon}>🔒</div>
@@ -306,7 +302,6 @@ const ForgotPassword = () => {
                     {showPwd ? '🙈' : '👁️'}
                   </button>
                 </div>
-                {/* Password strength bar */}
                 {password && (
                   <div style={S.strengthWrap}>
                     <div style={S.strengthBar()}>
@@ -363,7 +358,7 @@ const ForgotPassword = () => {
             </div>
             <button
               style={{ ...S.btn(false), marginTop: '1.25rem' }}
-              onClick={() => navigate('/auth')}
+              onClick={() => navigate('/Auth')}
             >
               Go to Login
             </button>

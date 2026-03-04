@@ -1,4 +1,3 @@
-
 const UserService = require('../services/UserService');
 const JWT_PROVIDER = require('../config/JWT');
 const bcrypt = require('bcrypt');
@@ -6,13 +5,10 @@ const { sendEmail } = require('../config/email');
 
 const register = async (req, res) => {
   try {
-    const { name, surname, mobile, email, password, photo } = req.body;
+    const { name, surname, mobile, email, password } = req.body;
 
-    // Validate required fields
     if (!name || !surname || !mobile || !email || !password) {
-      return res.status(400).json({
-        message: "All fields are required"
-      });
+      return res.status(400).json({ message: "All fields are required" });
     }
 
     const userData = {
@@ -21,16 +17,11 @@ const register = async (req, res) => {
       mobile,
       email: email.toLowerCase(),
       password,
-      photo
+      photo: req.file?.path || null, // ✅ Cloudinary URL from req.file
     };
 
-    // Create user
     const user = await UserService.createUser(userData);
-
-    // Generate token
     const jwt = JWT_PROVIDER.generateToken(user._id);
-
-    // Remove sensitive data
     user.password = undefined;
 
     return res.status(201).json({
@@ -40,9 +31,7 @@ const register = async (req, res) => {
     });
 
   } catch (error) {
-    return res.status(500).json({
-      message: error.message
-    });
+    return res.status(500).json({ message: error.message });
   }
 };
 
@@ -59,9 +48,12 @@ const login = async (req, res) => {
 
     const jwt = JWT_PROVIDER.generateToken(user._id);
 
+    user.password = undefined;
+
     return res.status(200).send({
       jwt,
       message: 'Login Success',
+      user,
     });
   } catch (error) {
     return res.status(500).send({ error: error.message });
@@ -77,7 +69,6 @@ const logout = async (req, res) => {
   }
 };
 
-// FORGOT PASSWORD
 const forgotPassword = async (req, res) => {
   const { email } = req.body;
 
@@ -86,7 +77,6 @@ const forgotPassword = async (req, res) => {
 
     const resetToken = await UserService.setResetPasswordToken(email);
 
-    // Send email with reset link
     const resetUrl = `http://localhost:5173/reset-password/${resetToken}`;
     const html = `<p>You requested a password reset.</p>
                   <p>Click this link to reset your password: <a href="${resetUrl}">${resetUrl}</a></p>`;
@@ -99,7 +89,6 @@ const forgotPassword = async (req, res) => {
   }
 };
 
-// RESET PASSWORD
 const resetPassword = async (req, res) => {
   const { token, newPassword, confirmPassword } = req.body;
 

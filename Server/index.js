@@ -13,7 +13,7 @@ const chatbotSocket = require('./sockets/chatbotSocket');
 
 databaseConnect();
 
-const PORT = process.env.PORT || 8585;
+const PORT = Number(process.env.PORT) || 8585;
 
 const server = http.createServer(app);
 

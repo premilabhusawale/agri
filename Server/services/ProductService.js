@@ -22,6 +22,7 @@ const createProduct = async (reqData, files) => {
     discountedPrice,
     discount,
     tag: reqData.tag,
+    quantity: Number(reqData.quantity) || 0,
     offers: reqData.offers ? JSON.parse(reqData.offers) : [],
   });
 
@@ -70,6 +71,7 @@ const updateProduct = async (productId, reqData, files) => {
   product.title = reqData.title ?? product.title;
   product.brand = reqData.brand ?? product.brand;
   product.tag = reqData.tag ?? product.tag;
+  product.quantity = reqData.quantity ?? product.quantity;
   product.category = reqData.category ?? product.category;
   product.description = reqData.description ?? product.description;
   product.price = reqData.price ?? product.price;

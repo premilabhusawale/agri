@@ -1,35 +1,38 @@
 import { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
-const slides = [
-  {
-    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=1200&h=600&fit=crop",
-   
-  },
-   
-  {
-    image: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=1200&h=600&fit=crop",
-    
-  },
-  {
-    image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=1200&h=600&fit=crop",
-   
-    
-  },
-  {
-    image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&h=600&fit=crop",
-   
-    
-  },
-  {
-    image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=600&fit=crop",
-   
-    
-  },
-  
-];
-
 const HeroCarousel = () => {
+  const { t } = useTranslation();
+
+  const slides = [
+    {
+      image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=1200&h=600&fit=crop",
+      label: t('slide1Title'),
+      description: t('slide1Desc'),
+    },
+    {
+      image: "https://images.unsplash.com/photo-1619566636858-adf3ef46400b?w=1200&h=600&fit=crop",
+      label: t('slide2Title'),
+      description: t('slide2Desc'),
+    },
+    {
+      image: "https://images.unsplash.com/photo-1622206151226-18ca2c9ab4a1?w=1200&h=600&fit=crop",
+      label: t('slide3Title'),
+      description: t('slide3Desc'),
+    },
+    {
+      image: "https://images.unsplash.com/photo-1610832958506-aa56368176cf?w=1200&h=600&fit=crop",
+      label: t('slide4Title'),
+      description: t('slide4Desc'),
+    },
+    {
+      image: "https://images.unsplash.com/photo-1488459716781-31db52582fe9?w=1200&h=600&fit=crop",
+      label: t('slide5Title'),
+      description: t('slide5Desc'),
+    },
+  ];
+
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isAutoPlaying, setIsAutoPlaying] = useState(true);
 
@@ -38,7 +41,7 @@ const HeroCarousel = () => {
     if (!isAutoPlaying) return;
 
     const interval = setInterval(() => {
-      setCurrentIndex((prevIndex) => 
+      setCurrentIndex((prevIndex) =>
         prevIndex === slides.length - 1 ? 0 : prevIndex + 1
       );
     }, 4000);
@@ -54,7 +57,7 @@ const HeroCarousel = () => {
   };
 
   const goToPrevious = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? slides.length - 1 : prevIndex - 1
     );
     setIsAutoPlaying(false);
@@ -62,7 +65,7 @@ const HeroCarousel = () => {
   };
 
   const goToNext = () => {
-    setCurrentIndex((prevIndex) => 
+    setCurrentIndex((prevIndex) =>
       prevIndex === slides.length - 1 ? 0 : prevIndex + 1
     );
     setIsAutoPlaying(false);
@@ -72,7 +75,7 @@ const HeroCarousel = () => {
   return (
     <div className="relative w-full h-full overflow-hidden">
       {/* Slides Container */}
-      <div 
+      <div
         className="flex h-full transition-transform duration-500 ease-out"
         style={{ transform: `translateX(-${currentIndex * 100}%)` }}
       >
@@ -124,11 +127,10 @@ const HeroCarousel = () => {
           <button
             key={index}
             onClick={() => goToSlide(index)}
-            className={`h-2.5 rounded-full transition-all duration-300 ${
-              index === currentIndex
+            className={`h-2.5 rounded-full transition-all duration-300 ${index === currentIndex
                 ? "bg-white w-8"
                 : "bg-white/50 hover:bg-white/70 w-2.5"
-            }`}
+              }`}
             aria-label={`Go to slide ${index + 1}`}
           />
         ))}

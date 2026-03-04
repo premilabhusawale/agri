@@ -51,4 +51,8 @@ app.use('/api/v1', Wishlist_Route);
 const Price_Route = require('./routes/PriceRoutes')
 app.use('/api/v1', Price_Route);
 
+// Admin Routes
+const Admin_Route = require('./routes/AdminRoutes')
+app.use('/api/v1', Admin_Route);
+
 module.exports = app;

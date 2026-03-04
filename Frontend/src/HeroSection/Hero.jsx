@@ -1,68 +1,72 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { Search, TrendingUp, Users, Leaf, ArrowRight, X } from "lucide-react";
+import { useTranslation } from "react-i18next";
+import { api } from "../config/apiConfig";
 import HeroCarousel from "./HeroCarousel";
-import products from "../Data/Products";
 
 const Hero = () => {
   const navigate = useNavigate();
+  const { t } = useTranslation();
+
+  const [products, setProducts] = useState([]);
+
+  useEffect(() => {
+    api.get("/product")
+      .then(res => setProducts(Array.isArray(res.data) ? res.data : res.data.products || []))
+      .catch(err => console.error("Failed to fetch products:", err));
+  }, []);
+
   const [searchQuery, setSearchQuery] = useState("");
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [selectedIndex, setSelectedIndex] = useState(-1);
 
   const stats = [
-    { icon: Users, value: "10K+", label: "Active Farmers" },
-    { icon: TrendingUp, value: "₹50L+", label: "Daily Trades" },
-    { icon: Leaf, value: "200+", label: "Crop Varieties" },
+    { icon: Users, value: "10K+", label: t('statFarmers') },
+    { icon: TrendingUp, value: "₹50L+", label: t('statTrades') },
+    { icon: Leaf, value: "200+", label: t('statVarieties') },
   ];
 
-  // Filter products based on search query
   const filteredProducts = searchQuery.trim()
-    ? products.filter((product) =>
-        product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        (product.farmer && product.farmer.toLowerCase().includes(searchQuery.toLowerCase())) ||
-        (product.category && product.category.toLowerCase().includes(searchQuery.toLowerCase()))
-      ).slice(0, 5) // Show max 5 suggestions
+    ? products.filter((product) => {
+      const q = searchQuery.toLowerCase();
+      return (
+        (product.title?.toLowerCase() ?? "").includes(q) ||
+        (product.category?.toLowerCase() ?? "").includes(q)
+      );
+    }).slice(0, 5)
     : [];
 
-  // Handle search submission
   const handleSearch = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // Navigate to marketplace with search query as URL parameter
       navigate(`/MarketPlace?search=${encodeURIComponent(searchQuery.trim())}`);
       setShowSuggestions(false);
       setSearchQuery("");
     }
   };
 
-  // Handle product click from suggestions
   const handleProductClick = (productId) => {
     navigate(`/ProductDetails/${productId}`);
     setShowSuggestions(false);
     setSearchQuery("");
   };
 
-  // Handle keyboard navigation
   const handleKeyDown = (e) => {
     if (!showSuggestions || filteredProducts.length === 0) return;
-
     if (e.key === "ArrowDown") {
       e.preventDefault();
-      setSelectedIndex((prev) => 
-        prev < filteredProducts.length - 1 ? prev + 1 : prev
-      );
+      setSelectedIndex((prev) => (prev < filteredProducts.length - 1 ? prev + 1 : prev));
     } else if (e.key === "ArrowUp") {
       e.preventDefault();
       setSelectedIndex((prev) => (prev > 0 ? prev - 1 : -1));
     } else if (e.key === "Enter" && selectedIndex >= 0) {
       e.preventDefault();
-      handleProductClick(filteredProducts[selectedIndex].id);
+      handleProductClick(filteredProducts[selectedIndex]._id);
     }
   };
 
-  // Handle input change
   const handleInputChange = (e) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -70,7 +74,6 @@ const Hero = () => {
     setSelectedIndex(-1);
   };
 
-  // Clear search
   const handleClear = () => {
     setSearchQuery("");
     setShowSuggestions(false);
@@ -94,7 +97,7 @@ const Hero = () => {
           >
             <span className="text-white inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm border border-white/20 text-sm font-medium mb-6">
               <span className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              Live Market Prices Updated Every Hour
+              {t('heroBadge')}
             </span>
           </motion.div>
 
@@ -104,9 +107,9 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.1 }}
             className="text-white text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-6"
           >
-            Empowering Farmers with{" "}
-            <span className="text-orange-400">Real-Time Prices</span> &{" "}
-            <span className="text-orange-400">Direct Market Access</span>
+            {t('heroTitle')}{" "}
+            <span className="text-orange-400">{t('heroPriceSpan')}</span> {t('heroAnd')}{" "}
+            <span className="text-orange-400">{t('heroMarketSpan')}</span>
           </motion.h1>
 
           <motion.p
@@ -115,8 +118,7 @@ const Hero = () => {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="text-white text-lg md:text-xl mb-8 max-w-2xl"
           >
-            Connect directly with buyers, get fair prices for your harvest, and access live market
-            data. No middlemen, just pure farm-to-table commerce.
+            {t('heroDescription')}
           </motion.p>
 
           {/* Search Bar with Autocomplete */}
@@ -131,7 +133,7 @@ const Hero = () => {
                 <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-500 z-10" />
                 <input
                   type="text"
-                  placeholder="Search for tomatoes, wheat, rice..."
+                  placeholder={t('searchCropsHeader')}
                   value={searchQuery}
                   onChange={handleInputChange}
                   onKeyDown={handleKeyDown}
@@ -160,24 +162,19 @@ const Hero = () => {
                       {filteredProducts.map((product, index) => (
                         <div
                           key={product.id}
-                          onClick={() => handleProductClick(product.id)}
-                          className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${
-                            index === selectedIndex
-                              ? "bg-orange-50"
-                              : "hover:bg-gray-50"
-                          } ${index !== 0 ? "border-t border-gray-100" : ""}`}
+                          onClick={() => handleProductClick(product._id)}
+                          className={`flex items-center gap-3 p-3 cursor-pointer transition-colors ${index === selectedIndex ? "bg-orange-50" : "hover:bg-gray-50"
+                            } ${index !== 0 ? "border-t border-gray-100" : ""}`}
                         >
                           <img
                             src={product.image}
-                            alt={product.name}
+                            alt={product.title}
                             className="w-12 h-12 rounded-lg object-cover"
                           />
                           <div className="flex-1">
-                            <h4 className="font-semibold text-gray-900 text-sm">
-                              {product.name}
-                            </h4>
+                            <h4 className="font-semibold text-gray-900 text-sm">{product.title}</h4>
                             <p className="text-xs text-gray-500">
-                              {product.farmer} • ₹{product.price}/{product.unit}
+                              {product.brand} • ₹{product.discountedPrice}
                             </p>
                           </div>
                           <ArrowRight className="w-4 h-4 text-gray-400" />
@@ -189,7 +186,7 @@ const Hero = () => {
                       >
                         <span className="text-sm text-orange-600 font-semibold flex items-center justify-center gap-2">
                           <Search className="w-4 h-4" />
-                          See all results for "{searchQuery}"
+                          {t('seeMore')} "{searchQuery}"
                         </span>
                       </div>
                     </motion.div>
@@ -205,15 +202,13 @@ const Hero = () => {
                       exit={{ opacity: 0, y: -10 }}
                       className="absolute top-full left-0 right-0 mt-2 bg-white rounded-lg shadow-xl border border-gray-200 p-4 text-center z-50"
                     >
-                      <p className="text-gray-500 text-sm">
-                        No products found for "{searchQuery}"
-                      </p>
+                      <p className="text-gray-500 text-sm">{t('noResults')} "{searchQuery}"</p>
                       <button
                         type="button"
                         onClick={() => navigate("/MarketPlace")}
                         className="mt-2 text-orange-600 text-sm font-semibold hover:text-orange-700"
                       >
-                        Browse all products
+                        {t('marketplace')}
                       </button>
                     </motion.div>
                   )}
@@ -224,7 +219,7 @@ const Hero = () => {
                 type="submit"
                 className="h-14 px-6 bg-orange-500 hover:bg-orange-600 text-white font-semibold rounded-lg shadow-lg flex items-center justify-center gap-2 transition-colors"
               >
-                Search Crops
+                {t('searchCropsBtn')}
                 <ArrowRight className="w-5 h-5" />
               </button>
             </form>
@@ -255,12 +250,29 @@ const Hero = () => {
       {/* Decorative Elements */}
       <motion.div
         initial={{ opacity: 0, scale: 0.8 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 1, delay: 0.5 }}
-        className="absolute bottom-10 right-10 hidden lg:block"
+        animate={{
+          opacity: 1,
+          scale: 1,
+          y: [0, -20, 0],
+        }}
+        transition={{
+          opacity: { duration: 1, delay: 0.5 },
+          scale: { duration: 1, delay: 0.5 },
+          y: { duration: 4, repeat: Infinity, ease: "easeInOut" }
+        }}
+        className="absolute bottom-20 right-20 hidden lg:block"
       >
-        <div className="w-32 h-32 rounded-full bg-orange-500/20 blur-3xl" />
+        <div className="w-48 h-48 rounded-full bg-orange-500/10 blur-3xl border border-orange-500/20" />
       </motion.div>
+
+      <motion.div
+        animate={{
+          x: [0, 30, 0],
+          y: [0, 40, 0],
+        }}
+        transition={{ duration: 10, repeat: Infinity, ease: "linear" }}
+        className="absolute top-1/4 right-1/4 w-2 h-2 bg-orange-400 rounded-full opacity-40"
+      />
     </section>
   );
 };

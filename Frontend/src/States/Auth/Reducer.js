@@ -1,20 +1,21 @@
 import {
     REGISTER_USER_REQUEST, REGISTER_USER_SUCCESS, REGISTER_USER_FAILED,
     LOGIN_USER_REQUEST,    LOGIN_USER_SUCCESS,    LOGIN_USER_FAILED,
-    LOGOUT_USER,
-    GET_USER_PROFILE_REQUEST,    GET_USER_PROFILE_SUCCESS,    GET_USER_PROFILE_FAILED,
+    LOGOUT_USER,           AUTH_RESTORED,
+    GET_USER_PROFILE_REQUEST, GET_USER_PROFILE_SUCCESS, GET_USER_PROFILE_FAILED,
     UPDATE_USER_PROFILE_REQUEST, UPDATE_USER_PROFILE_SUCCESS, UPDATE_USER_PROFILE_FAILED,
-    GET_ALL_USERS_REQUEST,        GET_ALL_USERS_SUCCESS,        GET_ALL_USERS_FAILED,
-    FORGOT_PASSWORD_REQUEST,     FORGOT_PASSWORD_SUCCESS,     FORGOT_PASSWORD_FAILED,
-    RESET_PASSWORD_REQUEST,      RESET_PASSWORD_SUCCESS,      RESET_PASSWORD_FAILED,
+    GET_ALL_USERS_REQUEST, GET_ALL_USERS_SUCCESS, GET_ALL_USERS_FAILED,
+    FORGOT_PASSWORD_REQUEST, FORGOT_PASSWORD_SUCCESS, FORGOT_PASSWORD_FAILED,
+    RESET_PASSWORD_REQUEST,  RESET_PASSWORD_SUCCESS,  RESET_PASSWORD_FAILED,
 } from './Types';
 
 const initialState = {
-    user:    null,
-    users:   [],     
-    jwt:     localStorage.getItem('jwt') || null,
-    loading: false,
-    error:   null,
+    user:                  null,
+    users:                 [],
+    jwt:                   localStorage.getItem('jwt') || null,
+    loading:               false,
+    error:                 null,
+    authRestored:          false,
     forgotPasswordMessage: null,
     resetPasswordMessage:  null,
 };
@@ -27,7 +28,7 @@ const authReducer = (state = initialState, action) => {
             return { ...state, loading: true, error: null };
 
         case REGISTER_USER_SUCCESS:
-            return { ...state, loading: false, user: action.payload, error: null };
+            return { ...state, loading: false, user: action.payload, error: null, authRestored: true };
 
         case REGISTER_USER_FAILED:
             return { ...state, loading: false, error: action.payload };
@@ -39,10 +40,11 @@ const authReducer = (state = initialState, action) => {
         case LOGIN_USER_SUCCESS:
             return {
                 ...state,
-                loading: false,
-                user: action.payload,
-                jwt: localStorage.getItem('jwt'),
-                error: null,
+                loading:      false,
+                user:         action.payload,
+                jwt:          action.payload.jwt,
+                error:        null,
+                authRestored: true,
             };
 
         case LOGIN_USER_FAILED:
@@ -50,17 +52,21 @@ const authReducer = (state = initialState, action) => {
 
         /* -------- LOGOUT -------- */
         case LOGOUT_USER:
-            return { ...initialState, jwt: null };
+            return { ...initialState, jwt: null, authRestored: true };
+
+        /* -------- AUTH RESTORED -------- */
+        case AUTH_RESTORED:
+            return { ...state, loading: false, authRestored: true }; // ← loading: false added
 
         /* -------- GET PROFILE -------- */
         case GET_USER_PROFILE_REQUEST:
             return { ...state, loading: true, error: null };
 
         case GET_USER_PROFILE_SUCCESS:
-            return { ...state, loading: false, user: action.payload, error: null };
+            return { ...state, loading: false, user: action.payload, error: null, authRestored: true };
 
         case GET_USER_PROFILE_FAILED:
-            return { ...state, loading: false, error: action.payload };
+            return { ...state, loading: false, error: action.payload, authRestored: true };
 
         /* -------- UPDATE PROFILE -------- */
         case UPDATE_USER_PROFILE_REQUEST:

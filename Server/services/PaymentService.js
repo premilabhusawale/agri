@@ -23,9 +23,9 @@ const createPaymentLink = async (orderId) => {
         },
         notify: { sms: true, email: true },
         reminder_enable: true,
-        callback_url: `http://localhost:8585/api/payment/callback?orderId=${orderId}`,
+        // ✅ Fixed: added /v1/ to match your route mounting
+        callback_url: `http://localhost:8585/api/v1/payment/callback?orderId=${orderId}`,
         callback_method: "get"
-
     });
 
     await Payment.create({
@@ -58,30 +58,21 @@ const updatePaymentInformation = async (query) => {
 
   // 1️⃣ Update Payment collection
   await Payment.findOneAndUpdate(
-    {
-      orderId: orderId,
-      paymentLinkId: razorpay_payment_link_id
-    },
-    {
-      paymentId: razorpay_payment_id,
-      status: "COMPLETED"
-    }
+    { orderId: orderId, paymentLinkId: razorpay_payment_link_id },
+    { paymentId: razorpay_payment_id, status: "COMPLETED" }
   );
 
-  // 2️⃣ Update Order
+  // 2️⃣ Update Order status
   const order = await OrderService.findOrderById(orderId);
-
   order.orderStatus = "CONFIRMED";
   order.paymentDetails = {
     paymentId: razorpay_payment_id,
-    paymentStatus: "SUCCESS"   // 🔥 FIXED FIELD NAME
+    paymentStatus: "SUCCESS"
   };
-
   await order.save();
 
   return { success: true, message: "Payment successful" };
 };
-
 
 module.exports = {
     createPaymentLink,

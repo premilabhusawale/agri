@@ -1,13 +1,13 @@
-import { api } from '../../config/apiConfig';   // ← same as teacher
+import { api } from '../../config/apiConfig';
 import {
     REGISTER_USER_REQUEST, REGISTER_USER_SUCCESS, REGISTER_USER_FAILED,
     LOGIN_USER_REQUEST,    LOGIN_USER_SUCCESS,    LOGIN_USER_FAILED,
-    LOGOUT_USER,
-    GET_USER_PROFILE_REQUEST,    GET_USER_PROFILE_SUCCESS,    GET_USER_PROFILE_FAILED,
+    LOGOUT_USER,           AUTH_RESTORED,
+    GET_USER_PROFILE_REQUEST, GET_USER_PROFILE_SUCCESS, GET_USER_PROFILE_FAILED,
     UPDATE_USER_PROFILE_REQUEST, UPDATE_USER_PROFILE_SUCCESS, UPDATE_USER_PROFILE_FAILED,
-    GET_ALL_USERS_REQUEST,        GET_ALL_USERS_SUCCESS,        GET_ALL_USERS_FAILED,
-    FORGOT_PASSWORD_REQUEST,     FORGOT_PASSWORD_SUCCESS,     FORGOT_PASSWORD_FAILED,
-    RESET_PASSWORD_REQUEST,      RESET_PASSWORD_SUCCESS,      RESET_PASSWORD_FAILED,
+    GET_ALL_USERS_REQUEST, GET_ALL_USERS_SUCCESS, GET_ALL_USERS_FAILED,
+    FORGOT_PASSWORD_REQUEST, FORGOT_PASSWORD_SUCCESS, FORGOT_PASSWORD_FAILED,
+    RESET_PASSWORD_REQUEST,  RESET_PASSWORD_SUCCESS,  RESET_PASSWORD_FAILED,
 } from './Types';
 
 
@@ -28,6 +28,7 @@ export const registerUser = (formData) => async (dispatch) => {
     }
 };
 
+
 export const loginUser = (credentials) => async (dispatch) => {
     dispatch({ type: LOGIN_USER_REQUEST });
     try {
@@ -40,15 +41,17 @@ export const loginUser = (credentials) => async (dispatch) => {
     }
 };
 
+
 export const logoutUser = () => (dispatch) => {
     localStorage.removeItem('jwt');
     dispatch({ type: LOGOUT_USER });
 };
 
+
 export const getUserProfile = () => async (dispatch) => {
     dispatch({ type: GET_USER_PROFILE_REQUEST });
     try {
-        const { data } = await api.get('/user/profile');
+        const { data } = await api.get('/profile');
         dispatch({ type: GET_USER_PROFILE_SUCCESS, payload: data });
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message;
@@ -56,16 +59,23 @@ export const getUserProfile = () => async (dispatch) => {
     }
 };
 
+
 export const updateUserProfile = (updateData) => async (dispatch) => {
     dispatch({ type: UPDATE_USER_PROFILE_REQUEST });
     try {
-        const { data } = await api.put('/user/update', updateData);
-        dispatch({ type: UPDATE_USER_PROFILE_SUCCESS, payload: data });
+        const isFormData = updateData instanceof FormData;
+        const { data } = await api.put('/update', updateData, {
+            headers: isFormData
+                ? { 'Content-Type': 'multipart/form-data' }
+                : { 'Content-Type': 'application/json' },
+        });
+        dispatch({ type: UPDATE_USER_PROFILE_SUCCESS, payload: data.user ?? data });
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message;
         dispatch({ type: UPDATE_USER_PROFILE_FAILED, payload: message });
     }
 };
+
 
 export const forgotPassword = (email) => async (dispatch) => {
     dispatch({ type: FORGOT_PASSWORD_REQUEST });
@@ -78,16 +88,18 @@ export const forgotPassword = (email) => async (dispatch) => {
     }
 };
 
+
 export const getAllUsers = () => async (dispatch) => {
     dispatch({ type: GET_ALL_USERS_REQUEST });
     try {
-        const { data } = await api.get('/users/users');
+        const { data } = await api.get('/all-users');
         dispatch({ type: GET_ALL_USERS_SUCCESS, payload: data });
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message;
         dispatch({ type: GET_ALL_USERS_FAILED, payload: message });
     }
 };
+
 
 export const resetPassword = (token, newPassword, confirmPassword) => async (dispatch) => {
     dispatch({ type: RESET_PASSWORD_REQUEST });
@@ -97,5 +109,25 @@ export const resetPassword = (token, newPassword, confirmPassword) => async (dis
     } catch (error) {
         const message = error.response?.data?.message || error.response?.data?.error || error.message;
         dispatch({ type: RESET_PASSWORD_FAILED, payload: message });
+    }
+};
+
+
+// ── Called once on app mount to rehydrate user from JWT in localStorage ──
+export const restoreAuth = () => async (dispatch) => {
+    const jwt = localStorage.getItem('jwt');
+
+    if (!jwt) {
+        dispatch({ type: AUTH_RESTORED });
+        return;
+    }
+
+    try {
+        const { data } = await api.get('/profile');
+        dispatch({ type: LOGIN_USER_SUCCESS, payload: { jwt, message: 'Session restored', ...data } });
+    } catch (error) {
+        console.log('restoreAuth error:', error.response?.status, error.response?.data);
+        localStorage.removeItem('jwt'); // ← clear expired/bad token
+        dispatch({ type: AUTH_RESTORED });
     }
 };

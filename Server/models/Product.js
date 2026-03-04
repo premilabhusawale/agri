@@ -1,4 +1,4 @@
-const mongoose =  require ("mongoose");
+const mongoose = require("mongoose");
 
 
 const productSchema = new mongoose.Schema({
@@ -20,6 +20,7 @@ const productSchema = new mongoose.Schema({
     reviews: [{ type: mongoose.Schema.Types.ObjectId, ref: "reviews" }],
     numRatings: { type: Number, default: 0 },
     numReviews: { type: Number, default: 0 },
+    quantity: { type: Number, default: 0 },
     createdAt: { type: Date, default: Date.now },
 });
 

@@ -16,7 +16,11 @@ const messageSchema = new mongoose.Schema({
     required: true,
   },
   chatRoom: {
-    type: String, 
+    type: String,
+  },
+  isRead: {
+    type: Boolean,
+    default: false,
   },
   createdAt: {
     type: Date,

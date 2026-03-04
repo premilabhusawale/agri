@@ -13,54 +13,59 @@ const PriceTicker = () => {
   ];
 
   const getTrendIcon = (change) => {
-    if (change > 0) return <TrendingUp className="w-4 h-4" />;
-    if (change < 0) return <TrendingDown className="w-4 h-4" />;
-    return <Minus className="w-4 h-4" />;
+    if (change > 0) return <TrendingUp className="w-3.5 h-3.5" />;
+    if (change < 0) return <TrendingDown className="w-3.5 h-3.5" />;
+    return <Minus className="w-3.5 h-3.5" />;
   };
 
   const getTrendColor = (change) => {
-    if (change > 0) return "text-green-500";
-    if (change < 0) return "text-red-500";
-    return "text-gray-500";
+    if (change > 0) return "text-emerald-400";
+    if (change < 0) return "text-rose-400";
+    return "text-gray-400";
+  };
+
+  const getTrendBg = (change) => {
+    if (change > 0) return "bg-emerald-500/10";
+    if (change < 0) return "bg-rose-500/10";
+    return "bg-gray-500/10";
   };
 
   // Duplicate for seamless scroll
-  const duplicatedPrices = [...prices, ...prices];
+  const duplicatedPrices = [...prices, ...prices, ...prices];
 
   return (
-    <section className="bg-[#235C42] py-3 overflow-hidden">
+    <section className="bg-[#133928] py-4 border-y border-white/5 relative overflow-hidden backdrop-blur-md">
       <style>{`
         @keyframes ticker {
-          0% {
-            transform: translateX(0);
-          }
-          100% {
-            transform: translateX(-50%);
-          }
+          0% { transform: translateX(0); }
+          100% { transform: translateX(-33.33%); }
         }
         .animate-ticker {
-          animation: ticker 40s linear infinite;
+          animation: ticker 60s linear infinite;
+        }
+        .animate-ticker:hover {
+          animation-play-state: paused;
         }
       `}</style>
-      
+
       <div className="flex animate-ticker">
         {duplicatedPrices.map((item, index) => (
           <div
             key={index}
-            className="flex items-center gap-6 px-8 border-r border-white/20 whitespace-nowrap"
+            className="flex items-center gap-6 px-10 border-r border-white/5 whitespace-nowrap group hover:bg-white/5 transition-colors duration-300 py-1"
           >
-            <div className="flex items-center gap-2">
-              <span className="text-xl">{item.emoji}</span>
-              <span className="font-semibold text-white">{item.name}</span>
+            <div className="flex items-center gap-3">
+              <span className="text-2xl group-hover:scale-125 transition-transform duration-500">{item.emoji}</span>
+              <span className="font-bold text-white/90 tracking-tight uppercase text-xs">{item.name}</span>
             </div>
-            <div className="flex items-center gap-2">
-              <span className="text-white font-bold">
-                ₹{item.price}/{item.unit}
+            <div className="flex items-center gap-4">
+              <span className="text-white font-black text-sm">
+                ₹{item.price}<span className="text-white/40 text-[10px] ml-1">/{item.unit}</span>
               </span>
-              <span className={`flex items-center gap-1 text-sm ${getTrendColor(item.change)}`}>
+              <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-black uppercase tracking-widest ${getTrendColor(item.change)} ${getTrendBg(item.change)} border border-current/10`}>
                 {getTrendIcon(item.change)}
                 {Math.abs(item.change)}%
-              </span>
+              </div>
             </div>
           </div>
         ))}

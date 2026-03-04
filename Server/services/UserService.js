@@ -60,7 +60,7 @@ const getAllUsers = async () => {
 
     } catch (error) {
         throw new Error(error.message)
-    }z
+    }
 }
 
 const findUserById = async (userId) => {
@@ -165,4 +165,15 @@ const resetPassword = async (token, newPassword, confirmPassword) => {
 
 
 
-module.exports = { setResetPasswordToken, resetPassword, createUser, getAllUsers, findUserByEmail, findUserById, logoutUser, getUserProfile, updateUserProfile };
+const deleteUser = async (userId) => {
+    try {
+        const user = await User.findById(userId);
+        if (!user) throw new Error('User not found');
+        await User.findByIdAndDelete(userId);
+        return { message: 'User deleted successfully' };
+    } catch (error) {
+        throw new Error(error.message);
+    }
+};
+
+module.exports = { deleteUser, setResetPasswordToken, resetPassword, createUser, getAllUsers, findUserByEmail, findUserById, logoutUser, getUserProfile, updateUserProfile };

@@ -1,14 +1,15 @@
 import React, { useState, useCallback, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { registerUser, loginUser } from '../states/Auth/Action'; // ← same import as teacher
+import { registerUser, loginUser } from '../States/Auth/Action';
+import { useTranslation } from 'react-i18next';
 
 /* ─── Inline Toast ───────────────────────────────────────── */
 const TOAST_COLORS = {
-  success: { bg:'#f0fdf4', border:'#86efac', text:'#15803d', bar:'#16a34a', icon:'✅' },
-  error:   { bg:'#fef2f2', border:'#fecaca', text:'#dc2626', bar:'#ef4444', icon:'❌' },
-  info:    { bg:'#eff6ff', border:'#bfdbfe', text:'#1d4ed8', bar:'#3b82f6', icon:'ℹ️' },
-  warning: { bg:'#fffbeb', border:'#fde68a', text:'#d97706', bar:'#f59e0b', icon:'⚠️' },
+  success: { bg: '#f0fdf4', border: '#86efac', text: '#15803d', bar: '#16a34a', icon: '✅' },
+  error: { bg: '#fef2f2', border: '#fecaca', text: '#dc2626', bar: '#ef4444', icon: '❌' },
+  info: { bg: '#eff6ff', border: '#bfdbfe', text: '#1d4ed8', bar: '#3b82f6', icon: 'ℹ️' },
+  warning: { bg: '#fffbeb', border: '#fde68a', text: '#d97706', bar: '#f59e0b', icon: '⚠️' },
 };
 const useToast = () => {
   const [toasts, setToasts] = useState([]);
@@ -19,18 +20,18 @@ const useToast = () => {
   }, []);
   const toast = {
     success: (m) => show(m, 'success'),
-    error:   (m) => show(m, 'error'),
-    info:    (m) => show(m, 'info'),
+    error: (m) => show(m, 'error'),
+    info: (m) => show(m, 'info'),
     warning: (m) => show(m, 'warning'),
   };
   const ToastContainer = () => (
-    <div style={{ position:'fixed', top:'1.25rem', right:'1.25rem', zIndex:99999, display:'flex', flexDirection:'column', gap:'0.6rem', pointerEvents:'none' }}>
+    <div style={{ position: 'fixed', top: '1.25rem', right: '1.25rem', zIndex: 99999, display: 'flex', flexDirection: 'column', gap: '0.6rem', pointerEvents: 'none' }}>
       {toasts.map(t => {
         const c = TOAST_COLORS[t.type];
         return (
-          <div key={t.id} style={{ background:c.bg, border:`1px solid ${c.border}`, borderLeft:`4px solid ${c.bar}`, borderRadius:'0.875rem', padding:'0.85rem 1.1rem', minWidth:'280px', maxWidth:'340px', boxShadow:'0 8px 30px rgba(0,0,0,0.12)', display:'flex', alignItems:'center', gap:'0.6rem', pointerEvents:'all', animation:'toastIn 0.25s ease', fontFamily:"'Segoe UI',sans-serif" }}>
-            <span style={{ fontSize:'1rem', flexShrink:0 }}>{c.icon}</span>
-            <span style={{ fontSize:'0.875rem', color:c.text, fontWeight:600, flex:1, lineHeight:1.4 }}>{t.message}</span>
+          <div key={t.id} style={{ background: c.bg, border: `1px solid ${c.border}`, borderLeft: `4px solid ${c.bar}`, borderRadius: '0.875rem', padding: '0.85rem 1.1rem', minWidth: '280px', maxWidth: '340px', boxShadow: '0 8px 30px rgba(0,0,0,0.12)', display: 'flex', alignItems: 'center', gap: '0.6rem', pointerEvents: 'all', animation: 'toastIn 0.25s ease', fontFamily: "'Segoe UI',sans-serif" }}>
+            <span style={{ fontSize: '1rem', flexShrink: 0 }}>{c.icon}</span>
+            <span style={{ fontSize: '0.875rem', color: c.text, fontWeight: 600, flex: 1, lineHeight: 1.4 }}>{t.message}</span>
           </div>
         );
       })}
@@ -62,7 +63,7 @@ const S = {
   },
   logo: { textAlign: 'center', marginBottom: '1.75rem' },
   logoText: { fontSize: '2.2rem', fontWeight: '900', letterSpacing: '-1px', lineHeight: 1, marginBottom: '0.35rem', display: 'block' },
-  logoGreen:  { color: '#15803d' },
+  logoGreen: { color: '#15803d' },
   logoOrange: { color: '#ea580c' },
   logoSub: { color: '#6b7280', fontSize: '0.9rem', fontFamily: "'Segoe UI', sans-serif" },
   roleHeading: { textAlign: 'center', fontSize: '1.25rem', fontWeight: '700', color: '#1f2937', marginBottom: '0.4rem', fontFamily: "'Segoe UI', sans-serif" },
@@ -127,28 +128,26 @@ const S = {
 
 /* ─── Auth Component ─────────────────────────────────────── */
 const Auth = () => {
-  const navigate  = useNavigate();
-  const dispatch  = useDispatch();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const { t } = useTranslation();
 
-  // ── Pull loading, error and user from Redux store (same as teacher) ──
-  // Tries s.auth first, then s.Auth (capital A) as a fallback
   const authState = useSelector((s) => s.auth ?? s.Auth ?? {});
   const { loading = false, error: reduxError = null, user = null } = authState;
 
   const { toast, ToastContainer } = useToast();
 
-  const [step,    setStep]    = useState('form');
+  const [step, setStep] = useState('form');
   const [isLogin, setIsLogin] = useState(true);
-  const [role,    setRole]    = useState(null);
-  const [error,   setError]   = useState('');
-  const [photo,   setPhoto]   = useState(null);
+  const [role, setRole] = useState(null);
+  const [error, setError] = useState('');
+  const [photo, setPhoto] = useState(null);
 
   const [formData, setFormData] = useState({
     name: '', surname: '', mobile: '',
     email: '', password: '', language: 'en',
   });
 
-  // ── Mirror Redux error into local error state (same as teacher) ──
   useEffect(() => {
     if (reduxError) setError(reduxError);
   }, [reduxError]);
@@ -157,35 +156,29 @@ const Auth = () => {
   useEffect(() => {
     if (!user) return;
 
-    // Save user object to localStorage so Header can read it
-    localStorage.setItem('user', JSON.stringify(user));
-
-    // Fire custom event so Header updates immediately without page reload
-    window.dispatchEvent(new Event('userLoggedIn'));
-
-    const userRole = user.role || user?.user?.role || user?.data?.role;
-
-    console.log('USER OBJECT FROM REDUX:', JSON.stringify(user, null, 2));
-
+    // ✅ Get role and normalize to uppercase for comparison
+    const userRole = (user.role || user?.user?.role || user?.data?.role || '').toUpperCase();
     const userName = user.name || user?.user?.name || user?.data?.name || 'there';
 
+    console.log('Navigating for role:', userRole);
+
     if (userRole === 'ADMIN') {
-      toast.success(`Welcome, ${userName}! Redirecting to dashboard...`);
+      toast.success(t('welcomeUser', { name: userName }) + ' ' + t('redirectingToDashboard'));
       navigate('/admin', { replace: true });
-    } else if (userRole === 'farmer') {
-      toast.success(`Welcome, ${userName}! 🌾`);
+    } else if (userRole === 'FARMER') {
+      toast.success(t('welcomeUser', { name: userName }) + ' 🌾');
       navigate('/', { replace: true });
-    } else if (userRole === 'customer') {
-      toast.success(`Welcome, ${userName}! 🛒`);
+    } else if (userRole === 'CUSTOMER') {
+      toast.success(t('welcomeUser', { name: userName }) + ' 🛒');
       navigate('/', { replace: true });
     } else {
-      toast.success(`Welcome, ${userName}!`);
+      toast.success(t('welcomeUser', { name: userName }));
       navigate('/', { replace: true });
     }
   }, [user]);
 
   const onFocus = (e) => { e.target.style.borderColor = '#16a34a'; e.target.style.boxShadow = '0 0 0 3px rgba(22,163,74,0.15)'; };
-  const onBlur  = (e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; };
+  const onBlur = (e) => { e.target.style.borderColor = '#e5e7eb'; e.target.style.boxShadow = 'none'; };
 
   const handleChange = (e) => {
     setFormData(prev => ({ ...prev, [e.target.name]: e.target.value }));
@@ -206,40 +199,26 @@ const Auth = () => {
     setFormData({ name: '', surname: '', mobile: '', email: '', password: '', language: 'en' });
   };
 
-  /* ── Submit — uses real API via Redux (same as teacher) ─── */
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
 
     if (!isLogin) {
-      // ── REGISTER ──────────────────────────────────────────
-      // Build FormData so multer can read req.file on the backend (same as teacher)
       const data = new FormData();
-      data.append('name',     formData.name);
-      data.append('surname',  formData.surname);
-      data.append('email',    formData.email);
-      data.append('mobile',   formData.mobile);
+      data.append('name', formData.name);
+      data.append('surname', formData.surname);
+      data.append('email', formData.email);
+      data.append('mobile', formData.mobile);
       data.append('password', formData.password);
       data.append('language', formData.language);
-      data.append('role',     role);           // send role to backend
-      if (photo) data.append('photo', photo);  // multer reads this as req.file
-
-      const res = await dispatch(registerUser(data));
-      if (res?.error) {
-        setError(res.error.message || 'Registration failed');
-      }
-      // Navigation is handled by the useEffect above when `user` updates in Redux
-
+      data.append('role', role);
+      if (photo) data.append('photo', photo);
+      await dispatch(registerUser(data));
     } else {
-      // ── LOGIN ─────────────────────────────────────────────
-      const res = await dispatch(loginUser({
-        email:    formData.email,
+      await dispatch(loginUser({
+        email: formData.email,
         password: formData.password,
       }));
-      if (res?.error) {
-        setError(res.error.message || 'Login failed');
-      }
-      // Navigation is handled by the useEffect above when `user` updates in Redux
     }
   };
 
@@ -255,33 +234,33 @@ const Auth = () => {
             <span style={S.logoText}>
               <span style={S.logoGreen}>Agri</span><span style={S.logoOrange}>Connect</span>
             </span>
-            <span style={S.logoSub}>Create your account</span>
+            <span style={S.logoSub}>{t('createAccount')}</span>
           </div>
 
-          <p style={S.roleHeading}>Who are you?</p>
-          <p style={S.roleSubheading}>Pick a role to get started</p>
+          <p style={S.roleHeading}>{t('whoAreYou')}</p>
+          <p style={S.roleSubheading}>{t('pickRole')}</p>
 
           <div style={S.roleGrid}>
             <button style={S.roleCard(role === 'farmer', '#15803d')} onClick={() => setRole('farmer')}
               onMouseEnter={e => { if (role !== 'farmer') e.currentTarget.style.borderColor = '#15803d'; }}
               onMouseLeave={e => { if (role !== 'farmer') e.currentTarget.style.borderColor = '#e5e7eb'; }}>
               <span style={S.roleEmoji}>🌾</span>
-              <span style={S.roleLabel('#15803d')}>Farmer</span>
-              <span style={S.roleDesc}>I grow &amp; sell fresh produce</span>
+              <span style={S.roleLabel('#15803d')}>{t('farmer')}</span>
+              <span style={S.roleDesc}>{t('farmerDesc')}</span>
             </button>
             <button style={S.roleCard(role === 'customer', '#ea580c')} onClick={() => setRole('customer')}
               onMouseEnter={e => { if (role !== 'customer') e.currentTarget.style.borderColor = '#ea580c'; }}
               onMouseLeave={e => { if (role !== 'customer') e.currentTarget.style.borderColor = '#e5e7eb'; }}>
               <span style={S.roleEmoji}>🛒</span>
-              <span style={S.roleLabel('#ea580c')}>Customer</span>
-              <span style={S.roleDesc}>I buy fresh local produce</span>
+              <span style={S.roleLabel('#ea580c')}>{t('customer')}</span>
+              <span style={S.roleDesc}>{t('customerDesc')}</span>
             </button>
           </div>
 
           <button style={S.continueBtn(!role)} disabled={!role} onClick={() => role && setStep('form')}>
-            {role ? `Continue as ${role.charAt(0).toUpperCase() + role.slice(1)}` : 'Select a role to continue'}
+            {role ? t('continueAs', { role: role.charAt(0).toUpperCase() + role.slice(1) }) : t('selectRoleToContinue')}
           </button>
-          <button style={S.roleBackBtn} onClick={goToLogin}>← Already have an account? Login</button>
+          <button style={S.roleBackBtn} onClick={goToLogin}>← {t('alreadyHaveAccount')}</button>
         </div>
       </div>
     );
@@ -297,48 +276,48 @@ const Auth = () => {
           <span style={S.logoText}>
             <span style={S.logoGreen}>Agri</span><span style={S.logoOrange}>Connect</span>
           </span>
-          <span style={S.logoSub}>{isLogin ? 'Welcome back!' : 'Join our farming community'}</span>
+          <span style={S.logoSub}>{isLogin ? t('welcomeBack') : t('joinCommunity')}</span>
         </div>
 
         {!isLogin && role && (
           <div style={S.roleBadgeWrap}>
             <span style={S.roleBadge(roleAccent)}>
-              {role === 'farmer' ? '🌾' : '🛒'}&nbsp;{role.charAt(0).toUpperCase() + role.slice(1)}
+              {role === 'farmer' ? '🌾' : '🛒'}&nbsp;{role === 'farmer' ? t('farmer') : t('customer')}
             </span>
-            <button style={S.changeBtn} onClick={() => setStep('role')}>Change</button>
+            <button style={S.changeBtn} onClick={() => setStep('role')}>{t('change')}</button>
           </div>
         )}
 
-        {loading && <div style={S.infoBox}>⏳ {isLogin ? 'Logging in...' : 'Creating your account...'}</div>}
-        {error   && <div style={S.errorBox}>⚠️ {error}</div>}
+        {loading && <div style={S.infoBox}>⏳ {isLogin ? t('loggingIn') : t('creatingAccount')}</div>}
+        {error && <div style={S.errorBox}>⚠️ {error}</div>}
 
         <form onSubmit={handleSubmit} style={S.form} noValidate>
           {!isLogin && (
             <>
               <div style={S.twoCol}>
                 <div style={S.field}>
-                  <label style={S.label}>First Name *</label>
+                  <label style={S.label}>{t('firstNameLabel')}</label>
                   <input style={S.input} type="text" name="name" value={formData.name}
-                    onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder="First name" />
+                    onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder={t('firstName')} />
                 </div>
                 <div style={S.field}>
-                  <label style={S.label}>Surname *</label>
+                  <label style={S.label}>{t('surnameLabel')}</label>
                   <input style={S.input} type="text" name="surname" value={formData.surname}
-                    onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder="Surname" />
+                    onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder={t('lastName')} />
                 </div>
               </div>
               <div style={S.field}>
-                <label style={S.label}>Mobile Number *</label>
+                <label style={S.label}>{t('mobileLabel')}</label>
                 <input style={S.input} type="tel" name="mobile" value={formData.mobile}
-                  onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder="Enter mobile number" />
+                  onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder={t('mobilePlaceholder')} />
               </div>
               <div style={S.field}>
-                <label style={S.label}>Profile Photo (Optional)</label>
+                <label style={S.label}>{t('photoLabel')}</label>
                 <input style={S.input} type="file" accept="image/*" onChange={handlePhotoChange} />
                 {photo && <p style={S.photoHint}>✓ {photo.name}</p>}
               </div>
               <div style={S.field}>
-                <label style={S.label}>Language</label>
+                <label style={S.label}>{t('languageLabel')}</label>
                 <select style={S.select} name="language" value={formData.language}
                   onChange={handleChange} onFocus={onFocus} onBlur={onBlur}>
                   <option value="en">English</option>
@@ -350,28 +329,28 @@ const Auth = () => {
           )}
 
           <div style={S.field}>
-            <label style={S.label}>Email *</label>
+            <label style={S.label}>{t('emailLabel')}</label>
             <input style={S.input} type="email" name="email" value={formData.email}
-              onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder="Enter your email" />
+              onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required placeholder={t('email')} />
           </div>
           <div style={S.field}>
-            <label style={S.label}>Password *</label>
+            <label style={S.label}>{t('passwordLabel')}</label>
             <input style={S.input} type="password" name="password" value={formData.password}
-              onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required minLength={6} placeholder="Enter your password" />
+              onChange={handleChange} onFocus={onFocus} onBlur={onBlur} required minLength={6} placeholder={t('password')} />
           </div>
 
           <button type="submit" style={S.submitBtn(loading)} disabled={loading}>
             {loading ? (
               <>
-                <svg style={{ animation:'spin 1s linear infinite', height:'1.1rem', width:'1.1rem' }}
+                <svg style={{ animation: 'spin 1s linear infinite', height: '1.1rem', width: '1.1rem' }}
                   xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                   <circle cx="12" cy="12" r="10" stroke="white" strokeWidth="4" opacity="0.25" />
                   <path fill="white" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
                 </svg>
-                {isLogin ? 'Logging in...' : 'Creating account...'}
+                {isLogin ? t('loggingIn') : t('creatingAccount')}
               </>
             ) : (
-              isLogin ? 'Login' : 'Create Account'
+              isLogin ? t('login') : t('createAccount')
             )}
           </button>
         </form>
@@ -380,14 +359,14 @@ const Auth = () => {
 
         <div style={S.footer}>
           {isLogin
-            ? <button style={S.footerBtn} onClick={goToSignup}>Don't have an account? Sign Up</button>
-            : <button style={S.footerBtn} onClick={goToLogin}>Already have an account? Login</button>
+            ? <button style={S.footerBtn} onClick={goToSignup}>{t('signUpBtn')}</button>
+            : <button style={S.footerBtn} onClick={goToLogin}>{isLogin ? t('signUpBtn') : t('alreadyHaveAccount').split('? ')[1] || t('login')}</button>
           }
         </div>
 
         {isLogin && (
-          <button style={S.forgotBtn} onClick={() => navigate('/forgot-password')}>
-            Forgot Password?
+          <button style={S.forgotBtn} onClick={() => navigate('/ForgotPassword')}>
+            {t('forgotPasswordBtn')}
           </button>
         )}
       </div>

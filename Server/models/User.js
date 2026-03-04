@@ -39,7 +39,7 @@ const userSchema = new mongoose.Schema({
     resetPasswordExpires: {
         type: Date,
     },
-    wishlist: [ // ✅ added
+    wishlist: [
         {
             productId: {
                 type: mongoose.Schema.Types.ObjectId,

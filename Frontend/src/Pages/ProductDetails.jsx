@@ -1,41 +1,53 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, Link, useNavigate } from 'react-router-dom'
-import products from '../Data/Products'
+import { useDispatch, useSelector } from 'react-redux'
 import { Star, ShoppingCart, Zap, Heart, Share2, TrendingUp, Leaf, Award } from 'lucide-react'
+import { getProductById } from '../States/Products/Action'
+import { addToCart } from '../States/Cart/Action'
+import { addToWishlist, removeFromWishlist, getWishlist } from '../States/Wishlist/Action'
+import RatingsReviews from '../Components/RatingReview'
 
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    const { product, loading, error } = useSelector((state) => state.products);
+    const { items: wishlistItems } = useSelector((state) => state.wishlist);
+
     const [isLoaded, setIsLoaded] = useState(false);
     const [selectedImage, setSelectedImage] = useState(0);
     const [quantity, setQuantity] = useState(1);
 
-    // Match product by string ID
-    const product = products.find((item) => item.id === id);
+    // Check if current product is in wishlist
+    const isWishlisted = wishlistItems?.some(
+        (item) => item.product?._id === product?._id
+    );
 
-    // eslint-disable-next-line react-hooks/set-state-in-effect
     useEffect(() => {
-        // Reset states when product ID changes
         setIsLoaded(false);
         setSelectedImage(0);
         setQuantity(1);
-        
-        // Scroll to top when product changes
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
-        // Small delay for smooth transition
-        const timer = setTimeout(() => {
-            setIsLoaded(true);
-        }, 100);
-
+        dispatch(getProductById(id));
+        dispatch(getWishlist());
+        const timer = setTimeout(() => setIsLoaded(true), 100);
         return () => clearTimeout(timer);
-    }, [id]); // eslint-disable-line react-hooks/exhaustive-deps
+    }, [id, dispatch]);
 
-    if (!product) {
+    if (loading) {
+        return (
+            <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
+                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-green-600"></div>
+            </div>
+        );
+    }
+
+    if (error || !product) {
         return (
             <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-green-50 to-white">
                 <div className="text-center">
-                    <p className="text-xl text-gray-600 mb-4">Product Not Found</p>
+                    <p className="text-xl text-gray-600 mb-4">{error || 'Product Not Found'}</p>
                     <Link to="/MarketPlace" className="text-green-600 hover:text-green-700 font-semibold">
                         ← Back to Marketplace
                     </Link>
@@ -44,114 +56,38 @@ const ProductDetails = () => {
         );
     }
 
-    const discountedPrice = product.discount > 0 
-        ? product.price * (1 - product.discount / 100) 
-        : product.price;
-
-    // Additional product images (using same image for demo)
     const images = [product.image, product.image, product.image, product.image];
 
-    // Default values with fallbacks
-    const rating = product.rating || 4.0;
-    const reviews = product.reviews || 500;
-    
-    // Default rating breakdown
-    const ratingBreakdown = product.ratingBreakdown || {
-        5: Math.floor(reviews * 0.5) || 250,
-        4: Math.floor(reviews * 0.3) || 150,
-        3: Math.floor(reviews * 0.12) || 60,
-        2: Math.floor(reviews * 0.05) || 25,
-        1: Math.floor(reviews * 0.03) || 15
-    };
-
-    const renderStars = (rating) => {
-        const stars = [];
-        const fullStars = Math.floor(rating);
-        
-        for (let i = 0; i < 5; i++) {
-            stars.push(
-                <Star
-                    key={i}
-                    className={`w-3 h-3 ${i < fullStars ? 'text-white fill-white' : 'text-gray-300 fill-gray-300'}`}
-                />
-            );
-        }
-        return stars;
-    };
-
-    // Handle Add to Cart
     const handleAddToCart = () => {
-        try {
-            // Get existing cart from localStorage
-            const existingCart = JSON.parse(localStorage.getItem('cart') || '[]');
-            
-            // Check if product already exists in cart
-            const existingItemIndex = existingCart.findIndex(item => item.id === product.id);
-            
-            if (existingItemIndex > -1) {
-                // Update quantity if product exists
-                existingCart[existingItemIndex].quantity += quantity;
-            } else {
-                // Add new product to cart
-                existingCart.push({
-                    id: product.id,
-                    name: product.name,
-                    price: discountedPrice,
-                    originalPrice: product.price,
-                    discount: product.discount,
-                    image: product.image,
-                    unit: product.unit || 'kg',
-                    quantity: quantity,
-                    farmer_id: product.farmer_id || 'f1'
-                });
-            }
-            
-            // Save updated cart to localStorage
-            localStorage.setItem('cart', JSON.stringify(existingCart));
-            
-            // Show success message
-            alert(`${product.name} added to cart!`);
-        } catch (error) {
-            console.error('Error adding to cart:', error);
-            alert('Failed to add item to cart. Please try again.');
+        dispatch(addToCart(product._id));
+        alert(`${product.title} added to cart!`);
+    };
+
+    const handleWishlist = () => {
+        if (isWishlisted) {
+            dispatch(removeFromWishlist(product._id));
+        } else {
+            dispatch(addToWishlist(product._id));
         }
     };
 
-    // Handle Buy Now - FIXED VERSION
     const handleBuyNow = () => {
-        try {
-            console.log('Buy Now button clicked');
-            
-            // Create a buy now item
-            const buyNowItem = [{
-                id: product.id,
-                name: product.name,
-                price: discountedPrice,
-                originalPrice: product.price,
-                discount: product.discount || 0,
-                image: product.image,
-                unit: product.unit || 'kg',
-                quantity: quantity,
-                farmer_id: product.farmer_id || 'f1'
-            }];
-            
-            console.log('Storing buyNowItem:', buyNowItem);
-            
-            // Store in localStorage for checkout page
-            localStorage.setItem('buyNowItem', JSON.stringify(buyNowItem));
-            
-            // Verify it was stored
-            const stored = localStorage.getItem('buyNowItem');
-            console.log('Verification - Stored data:', stored);
-            
-            // Navigate to checkout page
-            console.log('Navigating to /CheckOut');
-            navigate('/CheckOut');
-            
-        } catch (error) {
-            console.error('Error in handleBuyNow:', error);
-            alert('Failed to process. Please try again.');
-        }
+        navigate('/CheckOut', {
+            state: {
+                buyNow: true,
+                buyNowItem: {
+                    _id: `buynow_${product._id}`,
+                    product: {
+                        _id: product._id,
+                        title: product.title,
+                        image: product.image,
+                    },
+                    quantity,
+                    price: product.price,
+                    discountedPrice: product.discountedPrice * quantity,
+                }
+            }
+        });
     };
 
     return (
@@ -160,15 +96,25 @@ const ProductDetails = () => {
                 <div className="flex flex-col lg:flex-row gap-6">
                     {/* Left Section - Images */}
                     <div className="lg:w-96 lg:sticky lg:top-4 lg:self-start">
-                        {/* Fresh Badge and Actions */}
                         <div className="flex justify-between items-center mb-4">
                             <div className="flex items-center gap-2 bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
                                 <Leaf className="w-4 h-4" />
                                 100% Fresh
                             </div>
                             <div className="flex gap-3">
-                                <button className="p-2 hover:bg-white rounded-full transition-colors shadow-sm">
-                                    <Heart className="w-5 h-5 text-gray-600" />
+                                {/* Heart / Wishlist Button */}
+                                <button
+                                    onClick={handleWishlist}
+                                    className="p-2 hover:bg-white rounded-full transition-colors shadow-sm"
+                                    title={isWishlisted ? 'Remove from Wishlist' : 'Add to Wishlist'}
+                                >
+                                    <Heart
+                                        className={`w-5 h-5 transition-colors ${
+                                            isWishlisted
+                                                ? 'fill-red-500 text-red-500'
+                                                : 'text-gray-600'
+                                        }`}
+                                    />
                                 </button>
                                 <button className="p-2 hover:bg-white rounded-full transition-colors shadow-sm">
                                     <Share2 className="w-5 h-5 text-gray-600" />
@@ -176,25 +122,14 @@ const ProductDetails = () => {
                             </div>
                         </div>
 
-                        {/* Main Image */}
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
-                            <img 
-                                src={images[selectedImage]} 
-                                alt={product.name}
-                                className="w-full h-96 object-cover rounded-lg"
-                            />
+                            <img src={images[selectedImage]} alt={product.title} className="w-full h-96 object-cover rounded-lg" />
                         </div>
 
-                        {/* Thumbnail Images */}
                         <div className="flex gap-3 mb-6">
                             {images.map((img, idx) => (
-                                <div 
-                                    key={idx}
-                                    onClick={() => setSelectedImage(idx)}
-                                    className={`bg-white border-2 rounded-lg p-2 cursor-pointer transition-all shadow-sm flex-1 ${
-                                        selectedImage === idx ? 'border-green-600' : 'border-gray-200 hover:border-gray-400'
-                                    }`}
-                                >
+                                <div key={idx} onClick={() => setSelectedImage(idx)}
+                                    className={`bg-white border-2 rounded-lg p-2 cursor-pointer transition-all shadow-sm flex-1 ${selectedImage === idx ? 'border-green-600' : 'border-gray-200 hover:border-gray-400'}`}>
                                     <img src={img} alt="" className="w-full h-16 object-cover rounded" />
                                 </div>
                             ))}
@@ -204,45 +139,31 @@ const ProductDetails = () => {
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
                             <label className="text-sm font-semibold text-gray-700 mb-2 block">Quantity</label>
                             <div className="flex items-center gap-3">
-                                <button 
-                                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors"
-                                >
-                                    −
-                                </button>
-                                <input 
-                                    type="number" 
-                                    value={quantity}
+                                <button onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors">−</button>
+                                <input type="number" value={quantity}
                                     onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                                     className="w-20 h-10 text-center border border-gray-300 rounded-lg font-semibold focus:outline-none focus:border-green-500"
-                                    min="1"
-                                />
-                                <button 
-                                    onClick={() => setQuantity(quantity + 1)}
-                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors"
-                                >
-                                    +
-                                </button>
-                                <span className="text-sm text-gray-600 ml-2">{product.unit || 'kg'}</span>
+                                    min="1" />
+                                <button onClick={() => setQuantity(quantity + 1)}
+                                    className="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-lg font-semibold text-gray-700 transition-colors">+</button>
                             </div>
                             <div className="mt-3 text-sm text-gray-600">
-                                Total: <span className="font-bold text-green-600 text-lg">₹{(discountedPrice * quantity).toFixed(2)}</span>
+                                Total: <span className="font-bold text-green-600 text-lg">
+                                    ₹{(product.discountedPrice * quantity).toFixed(2)}
+                                </span>
                             </div>
                         </div>
 
                         {/* Action Buttons */}
                         <div className="flex gap-3">
-                            <button 
-                                onClick={handleAddToCart}
-                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105"
-                            >
+                            <button onClick={handleAddToCart}
+                                className="flex-1 bg-green-600 hover:bg-green-700 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105">
                                 <ShoppingCart className="w-5 h-5" />
                                 ADD TO CART
                             </button>
-                            <button 
-                                onClick={handleBuyNow}
-                                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105"
-                            >
+                            <button onClick={handleBuyNow}
+                                className="flex-1 bg-orange-500 hover:bg-orange-600 text-white font-semibold py-3 rounded-lg shadow-md transition-all flex items-center justify-center gap-2 hover:scale-105">
                                 <Zap className="w-5 h-5" />
                                 BUY NOW
                             </button>
@@ -251,236 +172,112 @@ const ProductDetails = () => {
 
                     {/* Right Section - Details */}
                     <div className="flex-1">
-                        {/* Breadcrumb */}
                         <div className="text-xs text-gray-500 mb-3">
-                            <Link to="/" className="hover:text-green-600">Home</Link> › <Link to="/MarketPlace" className="hover:text-green-600">Fresh Produce</Link> › {product.name}
+                            <Link to="/" className="hover:text-green-600">Home</Link> ›{' '}
+                            <Link to="/MarketPlace" className="hover:text-green-600">Fresh Produce</Link> ›{' '}
+                            {product.title}
                         </div>
 
-                        {/* Product Name */}
-                        <h1 className="text-2xl font-semibold text-gray-800 mb-2">{product.name}</h1>
+                        <h1 className="text-2xl font-semibold text-gray-800 mb-2">{product.title}</h1>
+                        <p className="text-sm text-gray-500 mb-3">by <span className="font-medium text-gray-700">{product.brand}</span> · {product.category}</p>
 
-                        {/* Rating Badge */}
                         <div className="flex flex-wrap items-center gap-4 mb-4">
                             <div className="flex items-center gap-1 bg-green-600 text-white px-2 py-1 rounded text-xs font-semibold">
-                                {rating}
-                                <Star className="w-3 h-3 fill-white" />
+                                {product.numRatings || 0} <Star className="w-3 h-3 fill-white" />
                             </div>
-                            <span className="text-gray-500 text-sm">
-                                {reviews.toLocaleString()} Ratings & {Math.floor(reviews * 0.3)} Reviews
-                            </span>
+                            <span className="text-gray-500 text-sm">{product.numReviews || 0} Ratings & Reviews</span>
                             <span className="text-green-600 font-semibold text-sm flex items-center">
-                                <Award className="w-4 h-4 mr-1" />
-                                Farm Fresh Quality
+                                <Award className="w-4 h-4 mr-1" />Farm Fresh Quality
                             </span>
                         </div>
 
+                        {/* Price */}
                         <div className="bg-white border border-gray-200 rounded-lg p-4 mb-4 shadow-sm">
-                            {/* Price Section */}
                             <div className="flex items-baseline gap-3 mb-2 flex-wrap">
-                                <span className="text-3xl font-semibold text-green-700">
-                                    ₹{discountedPrice.toFixed(2)}
-                                </span>
+                                <span className="text-3xl font-semibold text-green-700">₹{product.discountedPrice?.toFixed(2)}</span>
                                 {product.discount > 0 && (
                                     <>
-                                        <span className="text-lg text-gray-400 line-through">
-                                            ₹{product.price.toFixed(2)}
-                                        </span>
-                                        <span className="text-green-600 font-medium text-base bg-green-50 px-2 py-1 rounded">
-                                            {product.discount}% off
-                                        </span>
+                                        <span className="text-lg text-gray-400 line-through">₹{product.price?.toFixed(2)}</span>
+                                        <span className="text-green-600 font-medium text-base bg-green-50 px-2 py-1 rounded">{product.discount}% off</span>
                                     </>
                                 )}
                             </div>
-                            <div className="text-sm text-gray-500">
-                                Per {product.unit || 'kg'} • Free delivery above ₹500
-                            </div>
+                            <div className="text-sm text-gray-500">Free delivery above ₹500</div>
                         </div>
 
-                        {/* Available Offers */}
-                        <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <TrendingUp className="w-5 h-5 text-green-600" />
-                                Special Offers
-                            </h3>
-                            <div className="space-y-2">
-                                <div className="flex items-start gap-2 text-sm">
-                                    <span className="text-green-600 font-semibold whitespace-nowrap">✓ Fresh Deal</span>
-                                    <span className="text-gray-700">Buy 2 kg or more, get extra 5% off</span>
-                                </div>
-                                <div className="flex items-start gap-2 text-sm">
-                                    <span className="text-green-600 font-semibold whitespace-nowrap">✓ Bank Offer</span>
-                                    <span className="text-gray-700">10% instant discount on HDFC Bank Cards</span>
-                                </div>
-                                <div className="flex items-start gap-2 text-sm">
-                                    <span className="text-green-600 font-semibold whitespace-nowrap">✓ Wallet Offer</span>
-                                    <span className="text-gray-700">Get ₹50 cashback on Paytm/PhonePe payments above ₹300</span>
-                                </div>
-                                <div className="flex items-start gap-2 text-sm">
-                                    <span className="text-green-600 font-semibold whitespace-nowrap">✓ Combo Deal</span>
-                                    <span className="text-gray-700">Buy with other vegetables and save up to 15%</span>
+                        {/* Offers */}
+                        {product.offers?.length > 0 && (
+                            <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
+                                <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
+                                    <TrendingUp className="w-5 h-5 text-green-600" />Special Offers
+                                </h3>
+                                <div className="space-y-2">
+                                    {product.offers.map((offer, idx) => (
+                                        <div key={idx} className="flex items-start gap-2 text-sm">
+                                            <span className="text-green-600 font-semibold">✓</span>
+                                            <span className="text-gray-700">{offer}</span>
+                                        </div>
+                                    ))}
                                 </div>
                             </div>
-                        </div>
+                        )}
 
-                        {/* Delivery Options */}
+                        {/* Delivery */}
                         <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <h3 className="font-semibold text-gray-800 mb-3">Delivery Information</h3>
                             <div className="flex gap-3 mb-3">
-                                <input 
-                                    type="text" 
-                                    placeholder="Enter Delivery Pincode"
-                                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:border-green-500"
-                                />
+                                <input type="text" placeholder="Enter Delivery Pincode"
+                                    className="border border-gray-300 rounded-lg px-3 py-2 text-sm flex-1 focus:outline-none focus:border-green-500" />
                                 <button className="text-white bg-green-600 hover:bg-green-700 font-semibold text-sm px-6 rounded-lg transition-colors">Check</button>
                             </div>
                             <div className="text-sm text-gray-700 space-y-1">
-                                <div>🚚 Delivery by <span className="font-semibold text-green-700">Tomorrow, 11 Jan</span></div>
                                 <div>✓ <span className="text-green-600 font-semibold">Free Delivery</span> on orders above ₹500</div>
                                 <div>✓ Same day delivery available in select areas</div>
                             </div>
                         </div>
 
-                        {/* Product Highlights */}
+                        {/* Description */}
                         <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold text-gray-800 mb-3">Product Highlights</h3>
-                            <ul className="space-y-2 text-sm text-gray-700">
-                                <li className="flex items-start gap-2">
-                                    <span className="text-green-600 font-bold">✓</span>
-                                    <span>Farm fresh, hand-picked produce</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-green-600 font-bold">✓</span>
-                                    <span>100% organic and pesticide-free</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-green-600 font-bold">✓</span>
-                                    <span>Rich in vitamins, minerals and nutrients</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-green-600 font-bold">✓</span>
-                                    <span>Sourced directly from verified farmers</span>
-                                </li>
-                                <li className="flex items-start gap-2">
-                                    <span className="text-green-600 font-bold">✓</span>
-                                    <span>Shelf life: 3-5 days when refrigerated</span>
-                                </li>
-                            </ul>
+                            <h3 className="font-semibold text-gray-800 mb-3">About This Product</h3>
+                            <p className="text-sm text-gray-700 leading-relaxed">{product.description}</p>
                         </div>
 
                         {/* Services */}
                         <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
                             <h3 className="font-semibold text-gray-800 mb-3">Services & Benefits</h3>
                             <div className="grid grid-cols-2 gap-4 text-sm text-gray-700">
-                                <div className="flex items-center gap-2">
-                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">✓</div>
-                                    <span>100% Quality Check</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">↻</div>
-                                    <span>Easy Returns</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">₹</div>
-                                    <span>Cash on Delivery</span>
-                                </div>
-                                <div className="flex items-center gap-2">
-                                    <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">🌱</div>
-                                    <span>Farm Certified</span>
-                                </div>
+                                {[
+                                    { icon: '✓', label: '100% Quality Check' },
+                                    { icon: '↻', label: 'Easy Returns' },
+                                    { icon: '₹', label: 'Cash on Delivery' },
+                                    { icon: '🌱', label: 'Farm Certified' },
+                                ].map(({ icon, label }) => (
+                                    <div key={label} className="flex items-center gap-2">
+                                        <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">{icon}</div>
+                                        <span>{label}</span>
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
                         {/* Storage Tips */}
                         <div className="mb-6 bg-green-50 border border-green-200 rounded-lg p-4">
                             <h3 className="font-semibold text-gray-800 mb-3 flex items-center gap-2">
-                                <Leaf className="w-5 h-5 text-green-600" />
-                                Storage Tips
+                                <Leaf className="w-5 h-5 text-green-600" />Storage Tips
                             </h3>
                             <p className="text-sm text-gray-700">
-                                Store in a cool, dry place or refrigerate to maintain freshness. Wash thoroughly before consumption. 
+                                Store in a cool, dry place or refrigerate to maintain freshness. Wash thoroughly before consumption.
                                 Best consumed within 3-5 days of delivery for maximum nutritional benefits.
                             </p>
                         </div>
 
-                        {/* Product Description */}
-                        <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold text-gray-800 mb-3">About This Product</h3>
-                            <p className="text-sm text-gray-700 leading-relaxed mb-3">
-                                Fresh, high-quality {product.name.toLowerCase()} sourced directly from trusted farms. 
-                                Each piece is carefully hand-picked to ensure you receive only the best produce. 
-                                Rich in essential nutrients and vitamins, perfect for maintaining a healthy lifestyle.
-                            </p>
-                            <p className="text-sm text-gray-700 leading-relaxed">
-                                Our produce undergoes strict quality checks and is delivered fresh to your doorstep. 
-                                We work directly with farmers to ensure sustainable farming practices and fair prices.
-                            </p>
-                        </div>
-
-                        {/* Nutritional Information */}
-                        <div className="mb-6 bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold text-gray-800 mb-3">Nutritional Information</h3>
-                            <div className="grid grid-cols-2 gap-3">
-                                <div className="flex justify-between text-sm border-b pb-2">
-                                    <span className="text-gray-600">Calories</span>
-                                    <span className="text-gray-800 font-medium">25-50 per 100g</span>
-                                </div>
-                                <div className="flex justify-between text-sm border-b pb-2">
-                                    <span className="text-gray-600">Protein</span>
-                                    <span className="text-gray-800 font-medium">1-3g per 100g</span>
-                                </div>
-                                <div className="flex justify-between text-sm border-b pb-2">
-                                    <span className="text-gray-600">Fiber</span>
-                                    <span className="text-gray-800 font-medium">2-4g per 100g</span>
-                                </div>
-                                <div className="flex justify-between text-sm border-b pb-2">
-                                    <span className="text-gray-600">Vitamins</span>
-                                    <span className="text-gray-800 font-medium">A, C, K</span>
-                                </div>
-                            </div>
-                        </div>
-
-                        {/* Ratings & Reviews */}
-                        <div className="bg-white border border-gray-200 rounded-lg p-4 shadow-sm">
-                            <h3 className="font-semibold text-gray-800 mb-4">Customer Ratings & Reviews</h3>
-                            <div className="flex flex-col md:flex-row gap-8 mb-6">
-                                <div className="text-center">
-                                    <div className="text-5xl font-bold text-green-600">{rating}</div>
-                                    <div className="flex justify-center my-2 gap-1">
-                                        {renderStars(rating).map((star, idx) => (
-                                            <div key={idx} className="bg-green-600 rounded-full p-1">
-                                                {star}
-                                            </div>
-                                        ))}
-                                    </div>
-                                    <div className="text-sm text-gray-500">
-                                        {reviews.toLocaleString()} Ratings
-                                    </div>
-                                </div>
-                                <div className="flex-1">
-                                    {[5, 4, 3, 2, 1].map((stars) => (
-                                        <div key={stars} className="flex items-center gap-2 mb-2">
-                                            <span className="text-sm text-gray-600 w-8 font-medium">{stars} ★</span>
-                                            <div className="flex-1 bg-gray-200 rounded-full h-2.5">
-                                                <div 
-                                                    className="bg-green-600 h-2.5 rounded-full transition-all"
-                                                    style={{ 
-                                                        width: `${(ratingBreakdown[stars] / reviews) * 100}%` 
-                                                    }}
-                                                />
-                                            </div>
-                                            <span className="text-sm text-gray-500 w-16 text-right">
-                                                {ratingBreakdown[stars]}
-                                            </span>
-                                        </div>
-                                    ))}
-                                </div>
-                            </div>
-                        </div>
+                        {/* Live Ratings & Reviews */}
+                        <RatingsReviews productId={id} />
                     </div>
                 </div>
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default ProductDetails
+export default ProductDetails;
